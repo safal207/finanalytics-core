@@ -1,0 +1,70 @@
+name: FinControl SEC-001 build and verify
+
+on:
+  push:
+    branches: ['feat/fincontrol-sec001']
+    paths:
+      - 'fincontrol/**'
+      - '.github/workflows/fincontrol-publish.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fincontrol-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-and-publish-html:
+    if: github.repository == 'safal207/finanalytics-core' && github.ref == 'refs/heads/feat/fincontrol-sec001'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the exact triggering commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.16.0'
+      - name: Assert source and test the fixture and cryptography
+        shell: bash
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_COMMIT"
+          node --version
+          python3 --version
+          node --test fincontrol/tests/model.test.cjs fincontrol/tests/security.test.cjs
+      - name: Build the unchanged standalone demo and verify its digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 fincontrol/build.py
+          echo '3a1ef74abde7df9ac1384ecec4c3ea619b6ce60fded2c78052281e4c1f45cb25  fincontrol/index.html' | sha256sum --check --strict
+      - name: Commit only the verified HTML to the feature branch
+        shell: bash
+        env:
+          SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/feat/fincontrol-sec001'
+          test "$GITHUB_REPOSITORY" = 'safal207/finanalytics-core'
+          git add -- fincontrol/index.html
+          if git diff --cached --quiet; then
+            echo 'The verified HTML is already published.'
+            exit 0
+          fi
+          test "$(git diff --cached --name-only)" = 'fincontrol/index.html'
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "build(fincontrol): publish verified SEC-001 HTML from $SOURCE_COMMIT"
+          git push origin HEAD:refs/heads/feat/fincontrol-sec001
+      - name: Record the verification boundary
+        shell: bash
+        run: |
+          printf '%s\n' '## FinControl SEC-001' 'Node fixture and encryption tests passed. The generated HTML matched its pinned SHA-256.' 'Native-browser crypto, GitHub Pages deployment, independent security audit and production readiness are not established by this workflow.' >> "$GITHUB_STEP_SUMMARY"
