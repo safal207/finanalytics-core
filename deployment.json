@@ -1,0 +1,14 @@
+{
+  "product": "FinControl",
+  "release": "SEC-001 portfolio demo",
+  "source_repository": "safal207/finanalytics-core",
+  "source_ref": "feat/fincontrol-sec001",
+  "source_commit": "07c0393a91c008920e75efcfdb3881589f5bc771",
+  "source_path": "fincontrol/index.html",
+  "html_git_blob_sha": "5592e0a06816ae46784da99bd1ed9e327136fa6a",
+  "html_sha256": "3a1ef74abde7df9ac1384ecec4c3ea619b6ce60fded2c78052281e4c1f45cb25",
+  "synthetic_data_only": true,
+  "bank_integration": false,
+  "cloud_sync": false,
+  "production_ready": false
+}

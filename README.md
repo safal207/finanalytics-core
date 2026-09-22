@@ -1,103 +1,23 @@
-# FinAnalytics Core
+# FinControl — GitHub Pages demo
 
-**FinAnalytics Core** — аналитическое ядро для сервиса портфельной аналитики нового поколения: не просто `PnL/ROI`, а «дыхание портфеля» в реальном времени.
+Static publication branch for the FinControl SEC-001 portfolio demonstration.
 
-Проект стартует как отдельный продукт, вдохновлённый идеей сделать аналитику лучше, чем стандартные брокерские интерфейсы: глубже, понятнее, чувствительнее к риску, просадке, режимам рынка и стрессу.
+## Website
 
-## Что уже есть
+The intended GitHub Pages URL is https://safal207.github.io/finanalytics-core/ . A branch existing does not establish that Pages is enabled or that deployment succeeded. Verify the live URL and the Pages build.
 
-- Batch-расчёт equity-кривой по CSV сделок.
-- Базовые метрики:
-  - Breath Score
-  - current/max drawdown
-  - Ulcer Index
-  - CAGR
-  - Pain Ratio
-  - annualized volatility
-  - autocorr(1)
-  - rough Hurst R/S
-  - recovery time bars
-- Realtime Engine с кольцевым буфером.
-- Regime detector: простая эвристика по волатильности и автокорреляции.
-- Stress Engine:
-  - sigma-сценарии `-1σ/-2σ/-3σ`
-  - упрощённый liquidity stress
-- FastAPI demo API + WebSocket.
-- Минимальный UI `/demo`.
-- Pytest-тесты ядра.
-- Документация для Claude в `docs/CLAUDE_SPEC_RU.md`.
+Publishing source: branch `gh-pages`, folder `/ (root)`.
 
-## Быстрый старт
+## Source and integrity
 
-```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-pytest -q
-python server.py
-```
+- Source: `feat/fincontrol-sec001`, commit `07c0393a91c008920e75efcfdb3881589f5bc771`, path `fincontrol/index.html`.
+- The HTML is copied byte-for-byte, with its Content Security Policy unchanged.
+- SHA-256: `3a1ef74abde7df9ac1384ecec4c3ea619b6ce60fded2c78052281e4c1f45cb25`.
+- Machine-readable provenance: `deployment.json`.
+- Source pull request: https://github.com/safal207/finanalytics-core/pull/1 . This deployment does not merge it or modify `main`.
 
-В другом терминале:
+## Scope
 
-```bash
-curl -X POST "http://localhost:8000/api/ingest/csv?csv=sample_trades.csv&initial_cash=10000"
-curl "http://localhost:8000/api/metrics"
-```
+RU/EN financial dashboard, local encrypted `.fcvault` save/restore, traceable fixture metrics, reconciliation and confirmed plaintext CSV export. Synthetic built-in example only. No real bank statements, bank access, cloud synchronization, server-side financial processing or payment operations. Hosting the static page is not a security certification or a production-readiness claim. Browser-native cryptography must be validated separately from Node tests.
 
-Открыть UI:
-
-```text
-http://localhost:8000/demo
-```
-
-## Структура
-
-```text
-finanalytics-core/
-  fin_core/
-    datatypes.py
-    equity_builder.py
-    metrics_base.py
-    metrics_regime.py
-    stress_engine.py
-    feature_store.py
-    stream/
-      ring_buffer.py
-      bus_interface.py
-      realtime_engine.py
-    adapters/
-      csv_loader.py
-      tradernet.py
-      crypto_ccxt.py
-  tests/
-  docs/
-  server.py
-  sample_trades.csv
-  web_index.html
-  web_app.js
-```
-
-## Главная идея
-
-Обычная аналитика говорит: «портфель вырос/упал».  
-FinAnalytics должен говорить: **как именно портфель переживает среду**.
-
-То есть:
-
-- где он дышит ровно;
-- где входит в спазм;
-- где дроудаун становится не просто цифрой, а режимом боли;
-- где рынок сменил фазу;
-- где стресс-сценарий показывает скрытую хрупкость.
-
-## Следующий этап
-
-Claude должен продолжать с фокуса на аналитическом ядре:
-
-1. Усилить `fin_core`.
-2. Улучшить realtime-расчёты.
-3. Добавить адаптеры Tradernet и крипты как стабильные интерфейсы.
-4. Версионировать формулы и веса.
-5. Довести тесты и документацию до уровня grant/product-ready.
-
-См. `docs/CLAUDE_SPEC_RU.md`.
+No keys, passwords, user vaults or runtime financial data belong in this branch. The bundled synthetic example intentionally remains public.
