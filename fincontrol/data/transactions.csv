@@ -1,0 +1,13 @@
+source,account_id,provider_transaction_id,booked_at,status,amount,currency,kind,link_ref,replaces_id,description
+synthetic,checking,salary-1,2026-08-03T09:00:00Z,posted,120000.00,RUB,income,,,SYNTHETIC salary
+synthetic,checking,freelance-1,2026-08-05T09:00:00Z,posted,30000.00,RUB,income,,,SYNTHETIC freelance
+synthetic,checking,groceries-1,2026-08-06T09:00:00Z,posted,-8000.00,RUB,expense,,,SYNTHETIC groceries
+synthetic,checking,groceries-1,2026-08-06T09:00:00Z,posted,-8000.00,RUB,expense,,,SYNTHETIC groceries
+synthetic,checking,transfer-out-1,2026-08-07T09:00:00Z,posted,-20000.00,RUB,own_transfer,transfer-1,,SYNTHETIC transfer out
+synthetic,savings,transfer-in-1,2026-08-07T09:01:00Z,posted,20000.00,RUB,own_transfer,transfer-1,,SYNTHETIC transfer in
+synthetic,card,card-purchase-1,2026-08-08T09:00:00Z,posted,-10000.00,RUB,expense,,,SYNTHETIC card purchase
+synthetic,card,refund-1,2026-08-10T09:00:00Z,posted,2500.00,RUB,refund,card-purchase-1,,SYNTHETIC partial refund
+synthetic,checking,repayment-out-1,2026-08-11T09:00:00Z,posted,-6000.00,RUB,card_repayment,repayment-1,,SYNTHETIC card repayment out
+synthetic,card,repayment-in-1,2026-08-11T09:01:00Z,posted,6000.00,RUB,card_repayment,repayment-1,,SYNTHETIC card repayment in
+synthetic,checking,fee-1,2026-08-12T09:00:00Z,posted,-500.00,RUB,expense,,,SYNTHETIC fee
+synthetic,checking,pending-1,2026-08-30T09:00:00Z,pending,-1234.00,RUB,expense,,,SYNTHETIC pending purchase
