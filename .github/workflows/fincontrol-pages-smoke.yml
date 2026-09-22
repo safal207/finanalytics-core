@@ -1,0 +1,203 @@
+name: FinControl live Pages and native crypto smoke
+
+on:
+  push:
+    branches: [feat/fincontrol-sec001]
+    paths: [.github/workflows/fincontrol-pages-smoke.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  live-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Check out the triggering revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.16.0
+      - name: Re-run fixture and crypto unit tests
+        run: node --test fincontrol/tests/model.test.cjs fincontrol/tests/security.test.cjs
+      - name: Install pinned browser test driver
+        run: |
+          python3 -m venv "$RUNNER_TEMP/fincontrol-smoke-venv"
+          "$RUNNER_TEMP/fincontrol-smoke-venv/bin/pip" install --disable-pip-version-check playwright==1.57.0
+          command -v google-chrome
+      - name: Verify live website with native Chrome Web Crypto
+        env:
+          PYTHONUNBUFFERED: '1'
+        run: |
+          "$RUNNER_TEMP/fincontrol-smoke-venv/bin/python" - <<'PY'
+          import base64
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import tempfile
+          import time
+          import urllib.request
+          from playwright.sync_api import sync_playwright
+
+          URL = 'https://safal207.github.io/finanalytics-core/'
+          DIGEST = '3a1ef74abde7df9ac1384ecec4c3ea619b6ce60fded2c78052281e4c1f45cb25'
+          PASSWORD = 'Public-disposable-smoke-passphrase-2026!'
+          checks = []
+          def passed(name):
+              checks.append(name)
+              print('PASS:', name, flush=True)
+
+          # Bounded propagation retries, with normal HTTPS certificate verification.
+          for attempt in range(6):
+              try:
+                  request = urllib.request.Request(URL, headers={'Cache-Control': 'no-cache'})
+                  with urllib.request.urlopen(request, timeout=20) as response:
+                      assert response.status == 200
+                      assert response.geturl() == URL
+                      assert 'text/html' in response.headers.get('Content-Type', '')
+                      live = response.read()
+                  assert hashlib.sha256(live).hexdigest() == DIGEST, 'Deployed HTML does not match the pinned release'
+                  break
+              except Exception:
+                  if attempt == 5:
+                      raise
+                  time.sleep(5)
+          passed('Public HTTPS URL returns HTTP 200 and the exact pinned HTML')
+
+          with sync_playwright() as p, tempfile.TemporaryDirectory() as temp:
+              browser = p.chromium.launch(channel='chrome', headless=True)
+              context = browser.new_context(viewport={'width': 1440, 'height': 1060}, accept_downloads=True)
+              page = context.new_page()
+              page.set_default_timeout(30000)
+              errors = []
+              page.on('pageerror', lambda error: errors.append(str(error)))
+              response = page.goto(URL, wait_until='networkidle', timeout=60000)
+              assert response.status == 200
+              assert hashlib.sha256(response.body()).hexdigest() == DIGEST
+              security = page.evaluate("({secure:isSecureContext,subtle:!!crypto.subtle,native:Function.prototype.toString.call(crypto.subtle.encrypt).includes('[native code]')})")
+              assert all(security.values()), security
+              passed('Live Chrome loads the release over HTTPS with unmodified native Web Crypto')
+              assert page.locator('[data-metric="income_minor"]').inner_text().replace('\u00a0', ' ') == '150 000 ₽'
+              assert page.locator('[data-metric="net_spending_minor"]').inner_text().replace('\u00a0', ' ') == '16 000 ₽'
+              passed('Rendered overview shows the expected synthetic income and net spending')
+              page.locator('[data-key="net_spending_minor"]').first.click()
+              assert page.locator('#detail').is_visible()
+              page.keyboard.press('Escape')
+              passed('Metric evidence drill-down opens and closes')
+              page.locator('[data-action="nav"][data-view="transactions"]').click()
+              page.locator('#account-filter').select_option('card')
+              page.locator('#period-filter').select_option('first')
+              page.locator('#kind-filter').select_option('expense')
+              page.locator('#search-input').fill('card')
+              saved = page.evaluate('JSON.parse(JSON.stringify(FinControl.state))')
+              assert page.locator('tbody tr').count() == 1
+              passed('Account, period, type and search filters narrow the visible operations')
+              requests = []
+              page.on('request', lambda request: requests.append(request.url))
+              sockets = []
+              page.on('websocket', lambda socket: sockets.append(socket.url))
+              page.locator('.top-actions [data-action="vault-save"]').click()
+              page.locator('#vault-password').fill(PASSWORD)
+              page.locator('#vault-confirm').fill(PASSWORD)
+              page.locator('#vault-ack').check()
+              with page.expect_download() as download:
+                  page.locator('#vault-submit').click()
+              path = pathlib.Path(temp) / 'synthetic-roundtrip.fcvault'
+              download.value.save_as(path)
+              page.wait_for_selector('#vault-dialog', state='hidden')
+              encrypted = path.read_bytes()
+              assert download.value.suggested_filename.endswith('.fcvault')
+              envelope = json.loads(encrypted)
+              assert envelope['cipher']['name'] == 'AES-GCM'
+              assert envelope['kdf']['iterations'] == 600000
+              assert all(marker not in encrypted for marker in (PASSWORD.encode(), b'salary-1', b'120000.00', b'checking'))
+              passed('Native browser encryption produces a downloaded vault without readable fixture rows or password')
+              assert page.locator('#vault-dialog input').count() == 0
+              assert PASSWORD not in page.content()
+              passed('Save removes password input fields from the DOM')
+
+              def open_file(content):
+                  page.locator('#vault-file').set_input_files({'name':'synthetic.fcvault','mimeType':'application/octet-stream','buffer':content})
+                  page.wait_for_selector('#vault-file[data-validation="reading"]', state='detached')
+              def unlock(password):
+                  page.locator('#vault-password').fill(password)
+                  page.locator('#vault-submit').click()
+                  page.wait_for_selector('#vault-form[aria-busy="true"]', state='detached')
+
+              page.locator('[data-action="nav"][data-view="security"]').click()
+              page.locator('[data-action="vault-open"]').click()
+              before = page.evaluate('JSON.stringify(FinControl.state)')
+              open_file(encrypted)
+              unlock('Wrong-disposable-passphrase-2026!')
+              failure = page.locator('#vault-message').inner_text()
+              assert 'неверный пароль или файл повреждён' in failure
+              assert page.evaluate('JSON.stringify(FinControl.state)') == before
+              assert page.locator('#vault-password').input_value() == ''
+              passed('Wrong password is rejected without changing the active workspace')
+              changed = dict(envelope)
+              cipher = bytearray(base64.b64decode(changed['ciphertext_b64']))
+              cipher[0] ^= 1
+              changed['ciphertext_b64'] = base64.b64encode(cipher).decode()
+              open_file((json.dumps(changed, separators=(',', ':')) + '\n').encode())
+              unlock(PASSWORD)
+              assert page.locator('#vault-message').inner_text() == failure
+              assert page.evaluate('JSON.stringify(FinControl.state)') == before
+              passed('Modified ciphertext is rejected with the same generic failure')
+              open_file(encrypted)
+              unlock(PASSWORD)
+              page.wait_for_selector('#vault-dialog', state='hidden')
+              assert page.evaluate('JSON.parse(JSON.stringify(FinControl.state))') == saved
+              assert page.evaluate('FinControl.snapshot().metrics.net_spending_minor.toString()') == '750000'
+              assert page.locator('tbody tr').count() == 1
+              passed('Correct password restores filters and recomputes card spending exactly')
+              assert requests == [], requests
+              assert sockets == [], sockets
+              passed('No page network or WebSocket requests were observed during save and restore')
+              page.locator('[data-action="export"]').click()
+              assert 'без шифрования' in page.locator('#vault-title').inner_text()
+              page.locator('#vault-dialog [data-action="vault-close"]').first.click()
+              passed('Plaintext CSV export remains behind its separate confirmation')
+              fresh = context.new_page()
+              fresh.goto(URL, wait_until='networkidle', timeout=60000)
+              fresh.locator('[data-action="nav"][data-view="security"]').click()
+              fresh.locator('[data-action="vault-open"]').click()
+              fresh.locator('#vault-file').set_input_files(path)
+              fresh.wait_for_selector('#vault-file[data-validation="reading"]', state='detached')
+              assert fresh.locator('#vault-password').input_value() == ''
+              fresh.locator('#vault-password').fill(PASSWORD)
+              fresh.locator('#vault-submit').click()
+              fresh.wait_for_selector('#vault-dialog', state='hidden')
+              assert fresh.evaluate('JSON.parse(JSON.stringify(FinControl.state))') == saved
+              fresh.close()
+              passed('A fresh page restores the vault with a newly entered password')
+              page.locator('[data-action="nav"][data-view="security"]').click()
+              page.locator('[data-lang="en"]').click()
+              assert 'Protect your saved workspace' in page.locator('#view').inner_text()
+              passed('English security interface renders on the published site')
+              page.locator('[data-lang="ru"]').click()
+              page.set_viewport_size({'width':390,'height':844})
+              assert page.evaluate('document.documentElement.scrollWidth <= document.documentElement.clientWidth')
+              page.locator('.top-actions [data-action="vault-save"]').click()
+              box = page.locator('#vault-dialog').bounding_box()
+              assert box['x'] >= 0 and box['x'] + box['width'] <= 390
+              page.keyboard.press('Escape')
+              passed('Security page and encryption dialog fit a 390-pixel emulated viewport')
+              assert not errors, errors
+              passed('No JavaScript page errors in the main test page')
+              version = browser.version
+              browser.close()
+
+          report = {'site':URL,'html_sha256':DIGEST,'browser':'Chrome '+version,'native_crypto':True,'bridge_used':False,'passed':len(checks),'checks':checks,'limits':'Synthetic fixture; headless Linux Chrome and emulated viewport only; not physical-device coverage or a security audit.'}
+          print(json.dumps(report, ensure_ascii=False, indent=2))
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('# FinControl live Pages verification\n\n')
+              summary.write(f'{URL}\n\n**{len(checks)}/{len(checks)} live smoke checks PASS** in Chrome {version}. Native browser Web Crypto; no Node bridge.\n\n')
+              summary.write(f'HTML SHA-256: `{DIGEST}`\n\n')
+              summary.write('\n'.join('- PASS: '+name for name in checks))
+              summary.write('\n\nSynthetic data only. This is not a security audit, real-bank integration test or physical-mobile-device test.\n')
+          PY
