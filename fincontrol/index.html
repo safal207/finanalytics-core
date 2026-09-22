@@ -1,0 +1,601 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="FinControl — interactive financial dashboard portfolio prototype. Synthetic data only; no bank integration."><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-xuQ/w+SDyDpHD1WhVLmWh+WN46rxdbFhUu/fQbMTiYk=' 'sha256-bl6ZkN5L4nh0BmaWlUPdGs1luZ9KqgsEvbnTd0N8SLg=' 'sha256-Neo8/bH+olXnDxKtpYzPwmJRcXAVxDoW1LfyPPZeJXk=' 'sha256-z7xa69jY+OhWblHpGJDYQnYc0qZNkXFqRj+cyiDMI68=' 'sha256-D0mMw8QxEkLre54S3xeyWMIw/eZfNAKNvx9blaoffRQ=' 'sha256-LQU+j8yLRL5DNXWMOQ7lBpcFWxeJduNyQOvfijfWsXQ='; style-src 'unsafe-inline'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'none'"><title>FinControl — Financial dashboard demo</title><style>:root{--bg:#f4f6f9;--panel:#fff;--ink:#17253b;--muted:#748096;--line:#e7ebf1;--navy:#111e33;--green:#087f69;--green-soft:#e6f5ef;--amber:#98691f;--amber-soft:#fff5df;--blue:#4d73bd;--shadow:0 8px 28px #15284505;--radius:16px;font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:14px}
+*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button,select{cursor:pointer}button{transition:background .15s,border-color .15s,transform .15s}button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid #58a9f0;outline-offset:3px}button:disabled{cursor:default}svg{display:block}.icon{width:19px;height:19px;flex:none}button{color:inherit}a{color:var(--green)}
+.layout{display:grid;grid-template-columns:222px minmax(0,1fr);min-height:100vh}.sidebar{background:var(--navy);color:#d1d9e7;padding:33px 19px 24px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:38px}.brand{display:flex;gap:11px;align-items:center;padding:0 13px}.brandmark{width:33px;height:35px;display:flex;align-items:flex-end;gap:4px}.brandmark i{display:block;width:7px;border-radius:3px;background:#6edfc0}.brandmark i:nth-child(1){height:17px}.brandmark i:nth-child(2){height:29px}.brandmark i:nth-child(3){height:22px}.brandname{font-size:22px;font-weight:700;letter-spacing:-.8px;color:white}.brandcaption{font-size:10px;letter-spacing:1.7px;color:#8798b1;margin-top:5px}.navgroup{display:flex;flex-direction:column;gap:7px}.navcaption{font-size:10px;color:#71829c;letter-spacing:1.8px;padding:0 14px;margin-bottom:10px}.navbtn{border:0;display:flex;align-items:center;gap:12px;padding:13px 14px;text-align:left;background:transparent;border-radius:9px;color:#96a5bc;font-weight:500}.navbtn.active{background:#21354a;color:#a5f4db}.navbtn:hover{background:#1b2b42;color:white}.sidebar-bottom{margin-top:auto;background:#1b2b42;border:1px solid #2a3a50;border-radius:12px;padding:15px;line-height:1.6;font-size:12px;color:#91a3bc}.sidebar-bottom strong{color:#dce8f8;font-weight:500;display:block}.sideversion{font-size:11px;color:#697e9b;padding:0 13px;margin-top:-22px}
+.main{min-width:0;padding:33px 38px 24px;max-width:1720px;width:100%;margin:auto}.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:27px}.breadcrumb{color:var(--muted);font-size:12px;margin-bottom:9px}.breadcrumb span{margin:0 8px;color:#b8c0ce}h1{margin:0;font-size:27px;letter-spacing:-.8px;line-height:1.25;font-weight:650}h2{font-size:16px;letter-spacing:-.2px;margin:0;font-weight:650}h3{font-size:14px;margin:0}.top-actions{display:flex;align-items:center;gap:13px}.lang{border:1px solid var(--line);background:white;border-radius:8px;padding:4px;display:flex;gap:2px}.lang button{padding:7px 8px;font-size:11px;border:0;border-radius:5px;background:none;color:var(--muted);font-weight:650}.lang button.active{background:var(--navy);color:white}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 15px;border:1px solid var(--line);background:white;border-radius:9px;font-size:12px;font-weight:600;text-decoration:none}.btn:hover{background:#edf3f7}.btn.primary{background:var(--green);border-color:var(--green);color:white}.btn.primary:hover{background:#056751}.btn.subtle{background:transparent;border-color:transparent;color:var(--green);padding:5px 0;font-size:12px}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}.demo-label{display:flex;align-items:center;gap:8px;color:#607286;font-size:12px}.dot{width:6px;height:6px;background:#bd9649;border-radius:50%;display:inline-block}.controls{display:flex;gap:10px}.control{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 12px}.control .icon{width:16px;height:16px;color:var(--muted)}select{border:0;background:transparent;color:var(--ink);font-size:12px;max-width:235px;padding-right:6px}.notice{background:var(--amber-soft);border:1px solid #f1e0b6;color:#8b621f;padding:13px 16px;border-radius:10px;margin:0 0 20px;font-size:12px;line-height:1.6}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px;margin-bottom:22px}.kpi{border:1px solid var(--line);border-radius:var(--radius);background:white;padding:20px 21px;text-align:left;box-shadow:var(--shadow);min-width:0}.kpi:hover{border-color:#9dcbbc;transform:translateY(-2px)}.kpi-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:#6b778a;margin-bottom:17px}.kpi-head .icon{color:#94a4b8;width:17px;height:17px}.kpi-number{font-size:28px;letter-spacing:-.9px;font-weight:650;line-height:1.2;font-variant-numeric:tabular-nums;white-space:nowrap}.kpi:first-child .kpi-number{color:var(--green)}.kpi-sub{margin-top:12px;font-size:11px;color:var(--muted);line-height:1.5}.kpi-sub .tag{margin-right:6px}.tag{display:inline-flex;align-items:center;gap:5px;border-radius:5px;padding:3px 6px;font-size:10px;font-weight:600;white-space:nowrap;color:var(--green);background:var(--green-soft)}.tag.amber{background:var(--amber-soft);color:var(--amber)}.tag.gray{background:#edf0f5;color:#68778e}
+.grid-main{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:22px;margin-bottom:22px}.grid-secondary{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:22px;margin-bottom:22px}.panel{background:white;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);min-width:0;overflow:hidden}.panel-head{padding:22px 23px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.panel-sub{font-size:11px;color:var(--muted);line-height:1.6;margin-top:7px}.panel-body{padding:22px 23px}.chart-big-number{display:flex;align-items:baseline;gap:11px;padding:17px 23px 0;font-size:26px;font-weight:650;letter-spacing:-.7px;font-variant-numeric:tabular-nums}.chart-big-number small{font-size:11px;font-weight:400;letter-spacing:0;color:var(--muted)}.chart{padding:10px 16px 8px}.chart svg{width:100%;height:190px;overflow:visible}.chart-caption{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:10px;color:var(--muted);padding:0 23px 18px}.legend{display:flex;align-items:center;gap:6px}.legend i{display:block;width:7px;height:7px;border-radius:50%;background:var(--green)}.micro{font-size:11px;color:var(--muted);line-height:1.7}.composition{padding:15px 23px 20px;display:flex;flex-direction:column;gap:20px}.composition-row{width:100%;background:none;border:0;text-align:left;padding:0}.composition-label{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin-bottom:9px}.composition-label strong{font-weight:600;white-space:nowrap}.bartrack{height:7px;border-radius:5px;background:#f0f3f8;overflow:hidden}.bar{height:100%;border-radius:5px;background:var(--green)}.composition-row:nth-child(2) .bar{background:#527aa9}.composition-row:nth-child(3) .bar{background:#b6c5d7}.composition-footer{padding:0 23px 19px;font-size:11px;color:var(--muted)}.split-value{padding:15px 23px 0;font-size:25px;font-weight:650;letter-spacing:-.5px}.split-value small{font-size:11px;font-weight:400;color:var(--muted)}
+.account-row{display:flex;align-items:center;gap:11px;width:100%;padding:15px 0;border:0;border-bottom:1px solid var(--line);background:none;text-align:left}.account-row:last-child{border:0}.account-icon{background:#edf3f8;color:#64829b;width:36px;height:36px;border-radius:9px;display:grid;place-items:center;flex-shrink:0}.account-main{flex:1}.account-main strong{display:block;font-size:12px;font-weight:550}.account-main small{display:block;color:var(--muted);margin-top:5px;font-size:10px}.account-value{text-align:right;font-size:13px;font-weight:600;white-space:nowrap}.account-value small{display:block;color:var(--muted);font-weight:400;font-size:10px;margin-top:5px}.checks{padding:4px 23px 10px}.check-row{display:flex;gap:11px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}.check-row:last-child{border:0}.checknum{width:33px;height:33px;border-radius:9px;background:var(--green-soft);color:var(--green);display:grid;place-items:center;font-size:14px;font-weight:650;flex:none}.checknum.amber{background:var(--amber-soft);color:var(--amber)}.checktext{flex:1}.checktext strong{font-weight:550;font-size:12px;display:block}.checktext p{font-size:10px;color:var(--muted);line-height:1.6;margin:4px 0 0}.panel-link{padding:0 23px 18px}.bottomline{border-top:1px solid var(--line);padding-top:17px;color:#8390a1;font-size:10px;display:flex;justify-content:space-between;gap:15px;line-height:1.7}.footer-id{font-family:ui-monospace,monospace}.bridge{display:flex;gap:17px;align-items:center;padding:15px 23px 22px}.bridge>div{flex:1}.bridge strong{font-size:17px;font-weight:650;display:block;margin:5px 0 0}.bridge-arrow{color:#a9b6c8;flex:none!important}.bridge p{font-size:10px;color:var(--muted);line-height:1.6;margin:0}
+.table-filters{display:flex;justify-content:space-between;gap:15px;align-items:center;padding:20px 23px;border-bottom:1px solid var(--line)}.search{display:flex;align-items:center;gap:10px;color:var(--muted);width:330px}.search input{border:0;width:100%;padding:5px;outline-offset:1px;font-size:12px;background:transparent}.tablewrap{overflow:auto;width:100%}table{border-collapse:collapse;width:100%;font-size:12px;text-align:left}th{font-size:10px;font-weight:500;color:var(--muted);background:#fafbfd;padding:12px 18px;white-space:nowrap}td{padding:15px 18px;border-top:1px solid #eff1f5;white-space:nowrap}th:first-child,td:first-child{padding-left:23px}th:last-child,td:last-child{padding-right:23px;text-align:right}.rowclick{cursor:pointer}.rowclick:hover{background:#f8fbfa}.tx-title{font-weight:550;margin-bottom:5px}.tx-id{font-size:9px;font-family:ui-monospace,monospace;color:var(--muted)}.amount.positive{color:var(--green)}.amount{font-weight:600;font-variant-numeric:tabular-nums}.table-foot{padding:14px 23px;border-top:1px solid var(--line);color:var(--muted);font-size:10px;line-height:1.7}.empty{padding:40px;text-align:center;color:var(--muted);line-height:1.8}
+.recon-summary{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px}.calculation{padding:12px 23px 22px}.calc-row{display:flex;justify-content:space-between;gap:20px;padding:12px 0;border-bottom:1px solid var(--line);font-size:12px}.calc-row strong{white-space:nowrap;font-variant-numeric:tabular-nums}.calc-row.result{border:0;font-weight:600;font-size:15px;color:var(--green)}.explain{font-size:12px;color:#66768d;line-height:1.8}.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin:22px 0}.rule-card{padding:23px}.rule-card h3{margin-bottom:11px}.rule-card p{font-size:12px;color:#68798e;line-height:1.8;margin:0 0 15px}.rule-card .tag{margin-bottom:12px}.source-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:22px;margin-bottom:22px}.source-list{padding:4px 23px 20px}.source-item{padding:15px 0;border-bottom:1px solid var(--line)}.source-item:last-child{border:0}.source-item strong{font-size:12px;font-weight:550;display:block;margin-bottom:8px}.source-item code{font-size:10px;line-height:1.7;word-break:break-all;color:#73839a;display:block}.source-item .btn{margin-top:12px}.provenance{font-size:11px;word-break:break-word;line-height:1.8;padding:17px;border-radius:10px;background:#f6f8fb;color:#61748d}.badge-count{background:#e9edf3;color:#698098;border-radius:5px;font-size:10px;padding:4px 7px}
+.dialog{border:0;border-radius:17px;width:min(650px,calc(100vw - 30px));padding:0;box-shadow:0 30px 100px #0004;color:var(--ink);max-height:85vh}.dialog::backdrop{background:#1020357a;backdrop-filter:blur(3px)}.dialog-head{display:flex;gap:20px;align-items:flex-start;justify-content:space-between;padding:24px 25px;border-bottom:1px solid var(--line);position:sticky;top:0;background:white;z-index:1}.dialog h2{font-size:20px;line-height:1.4}.close{border:1px solid var(--line);background:white;width:30px;height:30px;border-radius:7px;display:grid;place-items:center;flex:none}.dialog-body{padding:24px 25px}.dialog-metric{font-size:34px;font-weight:650;color:var(--green);margin:0 0 18px;letter-spacing:-1px}.formula{border-radius:10px;background:#eef5f2;padding:15px 17px;font-size:12px;line-height:1.8;margin-bottom:21px}.detail-row{display:flex;justify-content:space-between;gap:20px;padding:13px 0;border-bottom:1px solid var(--line);font-size:12px}.detail-row small{display:block;font-family:ui-monospace,monospace;font-size:9px;color:var(--muted);margin-top:5px;word-break:break-all}.detail-row strong{white-space:nowrap;font-weight:550}.dialog-body h3{margin:22px 0 7px}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:white;padding:13px 20px;border-radius:9px;z-index:20;font-size:12px;box-shadow:0 10px 30px #0003}.screen-reader{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+@media(min-width:1550px){.main{padding-left:48px;padding-right:48px}.chart svg{height:215px}.kpi{padding:23px 25px}.kpi-number{font-size:32px}}
+@media(max-width:1180px){.layout{grid-template-columns:190px minmax(0,1fr)}.main{padding:27px 24px}.sidebar{padding-left:12px;padding-right:12px}.kpi{padding:17px 14px}.kpi-number{font-size:23px}.grid-main,.grid-secondary{grid-template-columns:1.45fr 1fr}.kpi-head{font-size:11px}.controls{gap:6px}}
+@media(max-width:950px){.layout{grid-template-columns:78px minmax(0,1fr)}.sidebar{padding:28px 12px;align-items:center}.brand{padding:0}.brand-copy,.navcaption,.navbtn span,.sidebar-bottom,.sideversion{display:none}.navbtn{padding:13px}.grid-main,.grid-secondary{grid-template-columns:1fr 1fr}.kpis{gap:10px}.kpi-number{font-size:21px}.kpi-head .icon{display:none}.toolbar{align-items:flex-start}.demo-label{font-size:10px;line-height:1.5;padding-top:10px}.panel-head{padding-left:18px;padding-right:18px}.composition{padding-left:18px;padding-right:18px}.chart-caption{flex-direction:column;align-items:flex-start;gap:6px}}
+@media(max-width:730px){.layout{display:block}.sidebar{position:relative;height:auto;display:block;padding:16px 18px;gap:0}.brand{display:flex}.brand-copy{display:block}.brandname{font-size:21px}.brandcaption{font-size:8px}.brandmark{height:29px;width:28px}.brandmark i{width:6px}.navgroup{display:flex;flex-direction:row;justify-content:space-between;gap:3px;margin-top:17px}.navbtn{gap:6px;padding:10px 7px;font-size:11px}.navbtn span{display:inline}.navbtn .icon{width:15px;height:15px}.main{padding:24px 17px}.topbar{align-items:flex-start;gap:13px;margin-bottom:22px}.breadcrumb{font-size:10px}h1{font-size:23px}.top-actions{gap:7px;flex-direction:column;align-items:flex-end}.top-actions .btn{padding:7px 10px;font-size:10px}.top-actions .btn .icon{width:13px;height:13px}.lang button{padding:5px 7px;font-size:10px}.toolbar{flex-direction:column;gap:13px;margin-bottom:17px}.demo-label{font-size:10px;padding:0}.controls{width:100%;gap:7px}.control{padding:9px;flex:1;min-width:0;gap:5px}.control select{min-width:0;max-width:100%;width:100%;font-size:10px}.control .icon{width:13px;height:13px}.kpis{grid-template-columns:1fr 1fr;gap:11px;margin-bottom:17px}.kpi{padding:16px 15px}.kpi-number{font-size:25px}.kpi-sub{font-size:10px;margin-top:9px}.kpi-head{margin-bottom:13px;font-size:10px}.grid-main,.grid-secondary,.recon-summary,.rules,.source-grid{grid-template-columns:1fr;gap:17px;margin-bottom:17px}.chart svg{height:195px}.chart-caption{flex-direction:row;flex-wrap:wrap}.table-filters{flex-direction:column;align-items:stretch;padding:15px 18px;gap:12px}.search{width:100%}.panel-head{padding-top:18px}.bottomline{flex-direction:column;gap:6px;font-size:9px}.notice{font-size:11px}.bridge strong{font-size:20px}.panel-body{padding:18px}.rule-card{padding:20px}.dialog-body{padding:20px}.dialog-head{padding:20px}.dialog h2{font-size:18px}.dialog-metric{font-size:29px}.table-foot{font-size:10px}.footer-id{word-break:break-all}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+/* SEC-001 adds a local vault without changing the analytical page layout. */
+.top-actions{flex-wrap:wrap;justify-content:flex-end}.topbar>div:first-child{flex-shrink:0}
+.vault-hero{padding:28px;display:flex;gap:24px;margin-bottom:20px;align-items:flex-start}.vault-hero h2{font-size:25px;letter-spacing:-.65px;margin:14px 0 10px}.vault-hero p{line-height:1.8;color:var(--muted);max-width:690px}.vault-emblem{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;background:var(--green-soft);color:var(--green);flex:none}.vault-emblem .icon{width:29px;height:29px}.vault-actions{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 14px}.vault-features{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:20px 0}.vault-feature{padding:23px}.vault-feature>.icon{width:22px;height:22px;color:var(--green);margin-bottom:18px}.vault-feature h3{font-size:14px;margin-bottom:11px}.vault-feature p{font-size:12px;line-height:1.8;color:var(--muted);margin:0}.vault-spec{border-top:1px solid var(--line);padding-top:18px;color:#607286;font-size:12px;line-height:1.8}.vault-spec strong{color:var(--ink);font-weight:600}.vault-boundary{padding:21px 5px 0;color:#6a7688;font-size:12px;line-height:1.8}.vault-boundary h3{color:var(--ink)}.vault-boundary p{margin:10px 0}.vault-receipt{padding:14px 18px;border:1px solid #b8dfcf;background:#eff9f4;border-radius:10px;font-size:12px;color:#22664f;line-height:1.7}
+#vault-dialog{width:min(600px,calc(100vw - 30px));max-height:90vh}#vault-dialog .dialog-head{align-items:center}#vault-dialog h2{font-size:21px}.vault-inline-note{padding:12px 14px;background:#f2f5f9;border-radius:9px;font-size:12px;line-height:1.7;color:#65758b;margin-bottom:19px}.vault-label{display:block;font-size:12px;font-weight:600;margin:16px 0 9px}#vault-form input[type="password"],#vault-form input[type="text"]{width:100%;border:1px solid #c8d2df;border-radius:9px;padding:12px;font-size:15px;font-family:ui-monospace,monospace;background:white;color:var(--ink)}#vault-file{width:100%;font-size:12px;border:1px dashed #c8d2df;background:#fbfcfe;border-radius:9px;padding:13px;line-height:1.7;color:var(--muted)}#vault-file::file-selector-button{border:1px solid var(--line);background:white;padding:7px 10px;border-radius:6px;color:var(--ink);margin-right:10px;cursor:pointer}.vault-small-actions{display:flex;gap:14px;justify-content:space-between;flex-wrap:wrap;margin:10px 0 18px}.vault-ack{display:flex;gap:10px;align-items:flex-start;font-size:12px;line-height:1.7;color:#54667e}.vault-ack input{margin:4px 0 0;flex-shrink:0;accent-color:var(--green)}.vault-form-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:23px}.vault-message{padding:12px 14px;background:#edf5f1;color:#285c48;border:1px solid #c5e1d2;border-radius:9px;margin-top:18px;line-height:1.7;font-size:12px}.vault-message.error{background:#fff2ec;color:#8c3b28;border-color:#efc3b6}.vault-form-boundary{border-top:1px solid var(--line);padding-top:16px;margin-top:22px;margin-bottom:0}.btn:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:1180px){.top-actions{gap:8px}.top-actions>.btn{font-size:11px;padding:9px 10px}.vault-features{gap:12px}.vault-feature{padding:18px}}
+@media(max-width:730px){.topbar{flex-wrap:wrap}.top-actions{flex-direction:row;width:100%;justify-content:space-between;align-items:center}.topbar>div:first-child{flex-shrink:1}.sidebar .navgroup{overflow-x:auto;justify-content:flex-start;gap:5px}.sidebar .navbtn{flex:none;padding:10px 8px;gap:5px}.vault-hero{padding:21px;gap:14px;flex-direction:column}.vault-hero h2{font-size:22px}.vault-emblem{width:45px;height:45px;border-radius:12px}.vault-emblem .icon{width:23px;height:23px}.vault-features{grid-template-columns:1fr;gap:12px}.vault-feature{padding:20px}.vault-actions>.btn{flex:1;white-space:nowrap}.vault-form-actions .btn{flex:1;font-size:11px;padding:12px 10px}.vault-small-actions{gap:5px}.vault-small-actions .btn{font-size:11px}.vault-hero .micro{font-size:11px}#vault-dialog .dialog-head,#vault-dialog .dialog-body{padding:18px}#vault-dialog h2{font-size:19px}}
+</style></head><body><div id="app"></div><dialog id="detail" class="dialog" aria-labelledby="dialog-title"></dialog><dialog id="vault-dialog" class="dialog" aria-labelledby="vault-title"></dialog><div id="toast" role="status" hidden class="toast"></div><script>window.DEMO_DATA={"manifest": {"schema_version": "0.1.0", "synthetic": true, "source": "synthetic", "source_sign_convention": "positive_inflow", "trusted_fixture_semantics": true, "as_of": "2026-09-01T00:00:00Z", "period": {"from": "2026-08-01T00:00:00Z", "to_exclusive": "2026-09-01T00:00:00Z"}, "currency_scale": {"RUB": 2, "USD": 2}, "accounts": [{"account_id": "checking", "type": "depository", "owner_id": "synthetic-owner", "currency": "RUB", "coverage": "complete", "opening_signed_balance_minor": "10000000", "closing_signed_balance_minor": "21550000", "balance_as_of": "2026-09-01T00:00:00Z", "balance_source": "synthetic"}, {"account_id": "savings", "type": "depository", "owner_id": "synthetic-owner", "currency": "RUB", "coverage": "complete", "opening_signed_balance_minor": "5000000", "closing_signed_balance_minor": "7000000", "balance_as_of": "2026-09-01T00:00:00Z", "balance_source": "synthetic"}, {"account_id": "card", "type": "credit", "owner_id": "synthetic-owner", "currency": "RUB", "coverage": "complete", "opening_signed_balance_minor": "0", "closing_signed_balance_minor": "-150000", "balance_as_of": "2026-09-01T00:00:00Z", "balance_source": "synthetic"}]}, "csv": "source,account_id,provider_transaction_id,booked_at,status,amount,currency,kind,link_ref,replaces_id,description\nsynthetic,checking,salary-1,2026-08-03T09:00:00Z,posted,120000.00,RUB,income,,,SYNTHETIC salary\nsynthetic,checking,freelance-1,2026-08-05T09:00:00Z,posted,30000.00,RUB,income,,,SYNTHETIC freelance\nsynthetic,checking,groceries-1,2026-08-06T09:00:00Z,posted,-8000.00,RUB,expense,,,SYNTHETIC groceries\nsynthetic,checking,groceries-1,2026-08-06T09:00:00Z,posted,-8000.00,RUB,expense,,,SYNTHETIC groceries\nsynthetic,checking,transfer-out-1,2026-08-07T09:00:00Z,posted,-20000.00,RUB,own_transfer,transfer-1,,SYNTHETIC transfer out\nsynthetic,savings,transfer-in-1,2026-08-07T09:01:00Z,posted,20000.00,RUB,own_transfer,transfer-1,,SYNTHETIC transfer in\nsynthetic,card,card-purchase-1,2026-08-08T09:00:00Z,posted,-10000.00,RUB,expense,,,SYNTHETIC card purchase\nsynthetic,card,refund-1,2026-08-10T09:00:00Z,posted,2500.00,RUB,refund,card-purchase-1,,SYNTHETIC partial refund\nsynthetic,checking,repayment-out-1,2026-08-11T09:00:00Z,posted,-6000.00,RUB,card_repayment,repayment-1,,SYNTHETIC card repayment out\nsynthetic,card,repayment-in-1,2026-08-11T09:01:00Z,posted,6000.00,RUB,card_repayment,repayment-1,,SYNTHETIC card repayment in\nsynthetic,checking,fee-1,2026-08-12T09:00:00Z,posted,-500.00,RUB,expense,,,SYNTHETIC fee\nsynthetic,checking,pending-1,2026-08-30T09:00:00Z,pending,-1234.00,RUB,expense,,,SYNTHETIC pending purchase\n", "provenance": {"repo": "safal207/alex-financial-os", "commit": "8780de339f11ed07f14e246270583c328170f3d2", "csv_sha256": "123a3c11762c37f665b78d1e437ccebe7a2d28b99b987d681734c03b53ef8f2b", "manifest_sha256": "49c089dee318a6e2d1e8dbcff4cfde9c5e5230adc34265c6738a2f05396d6bff", "classification": "SYNTHETIC", "prototype_adapter": "fixture-only-v0.1", "engine_executed": false}};</script><script>/* Fixture-only presentation adapter, not the FIN-001 engine. No networking or writes.
+ * Money is computed in integer minor units with BigInt. Only the bundled synthetic
+ * fixture is supported; this module is not a production statement importer.
+ */
+(function(root) {
+'use strict';
+function parseMoney(value) {
+  if (!/^-?\d+\.\d{2}$/.test(value)) throw Error('Invalid RUB amount');
+  const sign = value.startsWith('-') ? -1n : 1n;
+  const clean = value.replace('-','');
+  return sign * BigInt(clean.replace('.',''));
+}
+function parseCSV(text) {
+  // Deliberately restricted to this unquoted fixture; never presented as CSV import.
+  const lines = text.trim().split(/\r?\n/), headers = lines.shift().split(',');
+  return lines.map((line,i) => {
+    const values=line.split(',');
+    if(values.length!==headers.length) throw Error('Unexpected fixture CSV shape');
+    const row=Object.fromEntries(headers.map((h,j)=>[h,values[j]]));
+    if(row.source!=='synthetic'||row.currency!=='RUB') throw Error('Only synthetic RUB fixture supported');
+    return {...row,minor:parseMoney(row.amount),source_row:i+2};
+  });
+}
+function prepare(manifest, raw) {
+  if(!manifest.synthetic || !manifest.trusted_fixture_semantics) throw Error('Synthetic fixture required');
+  const seen=new Map(), rows=[], duplicates=[];
+  for(const r of raw) {
+    const key=JSON.stringify([r.source,r.account_id,r.provider_transaction_id]);
+    if(seen.has(key)) {
+      const prior=seen.get(key);
+      for(const name of ['booked_at','status','amount','currency','kind','link_ref','replaces_id','description'])
+        if(prior[name]!==r[name]) throw Error('IDENTITY_CONFLICT');
+      duplicates.push(r); continue;
+    }
+    seen.set(key,r); rows.push(r);
+  }
+  const accounts=new Map(manifest.accounts.map(a=>[a.account_id,a]));
+  const groups=new Map();
+  for(const r of rows.filter(r=>r.status==='posted'&&['own_transfer','card_repayment'].includes(r.kind))) {
+    const key=JSON.stringify([r.kind,r.link_ref]);
+    const g=groups.get(key)||[];g.push(r);groups.set(key,g);
+  }
+  for(const g of groups.values()) {
+    const [a,b]=g;
+    if(g.length!==2 || !a.link_ref || a.account_id===b.account_id || a.currency!==b.currency ||
+       a.minor+b.minor!==0n || accounts.get(a.account_id).owner_id!==accounts.get(b.account_id).owner_id)
+      throw Error('Unreconciled fixture movement');
+    const types=[accounts.get(a.account_id).type,accounts.get(b.account_id).type];
+    if(a.kind==='own_transfer'&&!types.every(t=>t==='depository')) throw Error('Invalid transfer types');
+    if(a.kind==='card_repayment'&&!(types.includes('credit')&&types.includes('depository'))) throw Error('Invalid repayment types');
+  }
+  const totals=new Map();
+  for(const r of rows.filter(r=>r.kind==='refund'&&r.status==='posted')) {
+    const target=rows.find(t=>t.source===r.source&&t.account_id===r.account_id&&t.provider_transaction_id===r.link_ref&&t.kind==='expense'&&t.status==='posted'&&t.currency===r.currency);
+    const used=(totals.get(r.link_ref)||0n)+r.minor;
+    if(!target || r.minor<0n || used > -target.minor) throw Error('Unresolved fixture refund');
+    totals.set(r.link_ref,used);
+  }
+  for(const a of manifest.accounts) {
+    const delta=rows.filter(r=>r.account_id===a.account_id&&r.status==='posted').reduce((s,r)=>s+r.minor,0n);
+    if(BigInt(a.opening_signed_balance_minor)+delta!==BigInt(a.closing_signed_balance_minor)) throw Error('Fixture balance mismatch');
+  }
+  return {manifest,raw,rows,duplicates,groups,accounts};
+}
+const periods={
+  full:{from:'2026-08-01T00:00:00Z',to:'2026-09-01T00:00:00Z'},
+  first:{from:'2026-08-01T00:00:00Z',to:'2026-08-16T00:00:00Z'},
+  last:{from:'2026-08-16T00:00:00Z',to:'2026-09-01T00:00:00Z'}
+};
+function calculate(data, account='all',period='full') {
+  const range=periods[period]; if(!range) throw Error('Unknown period');
+  const selected=data.manifest.accounts.filter(a=>account==='all'||a.account_id===account);
+  if(!selected.length) throw Error('Unknown account');
+  const ids=new Set(selected.map(a=>a.account_id));
+  const inScope=r=>ids.has(r.account_id)&&r.booked_at>=range.from&&r.booked_at<range.to;
+  const rows=data.rows.filter(inScope),posted=rows.filter(r=>r.status==='posted');
+  const income=posted.filter(r=>r.kind==='income');
+  const expenses=posted.filter(r=>r.kind==='expense');
+  const refunds=posted.filter(r=>r.kind==='refund');
+  const cashRows=posted.filter(r=>data.accounts.get(r.account_id).type==='depository');
+  const sum=xs=>xs.reduce((s,r)=>s+r.minor,0n);
+  const m={income_minor:sum(income),gross_spending_minor:-sum(expenses),attributable_refunds_minor:sum(refunds),cash_movement_minor:sum(cashRows)};
+  m.net_spending_minor=m.gross_spending_minor-m.attributable_refunds_minor;
+  m.economic_surplus_minor=m.income_minor-m.net_spending_minor;
+  const full=period==='full';
+  const cashAccounts=selected.filter(a=>a.type==='depository');
+  const creditAccounts=selected.filter(a=>a.type==='credit');
+  m.opening_cash_minor=full?cashAccounts.reduce((s,a)=>s+BigInt(a.opening_signed_balance_minor),0n):null;
+  m.closing_cash_minor=full?cashAccounts.reduce((s,a)=>s+BigInt(a.closing_signed_balance_minor),0n):null;
+  m.closing_liability_minor=full?creditAccounts.reduce((s,a)=>s+(BigInt(a.closing_signed_balance_minor)<0n?-BigInt(a.closing_signed_balance_minor):0n),0n):null;
+  m.closing_net_assets_minor=full?m.closing_cash_minor-m.closing_liability_minor:null;
+  const visibleGroups=[...data.groups.values()].filter(g=>g.some(inScope));
+  const counts={observations:data.raw.filter(inScope).length,unique_transactions:rows.length,posted_transactions:posted.length,pending_transactions:rows.filter(r=>r.status==='pending').length,duplicate_observations:data.duplicates.filter(inScope).length,reconciled_movement_groups:visibleGroups.length};
+  const daily=[];let running=0n;
+  for(let time=Date.parse(range.from);time<Date.parse(range.to);time+=86400000) {
+    const day=new Date(time).toISOString().slice(0,10);
+    running+=sum(cashRows.filter(r=>r.booked_at.startsWith(day)));
+    daily.push({day,value_minor:running.toString()});
+  }
+  const categories=expenses.map(r=>{
+    const returns=refunds.filter(t=>t.link_ref===r.provider_transaction_id);
+    return {id:r.provider_transaction_id,minor:-r.minor-sum(returns),rows:[r,...returns]};
+  });
+  return {metrics:m,rows,posted,income,expenses,refunds,cashRows,selected,visibleGroups,counts,daily,categories,period,account,range,full};
+}
+function filterTable(snapshot,kind='all',search='') {
+ const q=search.trim().toLowerCase();
+ return snapshot.rows.filter(r=>(kind==='all'||(kind==='pending'?r.status==='pending':r.kind===kind))&&
+  (!q||[r.description,r.provider_transaction_id,r.account_id,r.kind,r.amount].some(v=>v.toLowerCase().includes(q))));
+}
+function csvExport(rows) {
+ const headers=['source','account_id','provider_transaction_id','booked_at','status','amount','currency','kind','link_ref'];
+ const quote=v=>'"'+String(v).replace(/"/g,'""')+'"';
+ return headers.join(',')+'\r\n'+rows.map(r=>headers.map(h=>quote(r[h])).join(',')).join('\r\n')+'\r\n';
+}
+const api={parseMoney,parseCSV,prepare,calculate,filterTable,csvExport,periods};
+if(typeof module!=='undefined'&&module.exports) module.exports=api;
+else root.FinModel=api;
+})(typeof window!=='undefined'?window:globalThis);
+</script><script>/* SEC-001: local encrypted files. Web Crypto primitives only; no networking.
+ * This module protects a saved file, not an unlocked or compromised device.
+ * V1 is a bounded canonical envelope; no algorithm negotiation or weak fallback.
+ */
+(function (root) {
+  'use strict';
+  const FORMAT = 'FinControl.encrypted-workspace';
+  const VERSION = 1;
+  const ITERATIONS = 600000;
+  const MAX_FILE_BYTES = 262144;
+  const MAX_PLAINTEXT_BYTES = 131072;
+  const encoder = new TextEncoder();
+  class VaultError extends Error {
+    constructor(code) { super(code); this.name = 'VaultError'; this.code = code; }
+  }
+  const fail = code => { throw new VaultError(code); };
+  function cryptoProvider() {
+    const provider = root.crypto;
+    if (root.isSecureContext === false || !provider?.subtle || !provider?.getRandomValues)
+      fail('CRYPTO_UNAVAILABLE');
+    return provider;
+  }
+  function exactKeys(value, keys) {
+    return value !== null && typeof value === 'object' && !Array.isArray(value) &&
+      Object.keys(value).length === keys.length && keys.every(k => Object.hasOwn(value, k));
+  }
+  function toBase64(bytes) {
+    let result = '';
+    for (let i = 0; i < bytes.length; i += 8192)
+      result += String.fromCharCode(...bytes.subarray(i, i + 8192));
+    return btoa(result);
+  }
+  function fromBase64(text, minimum, maximum) {
+    if (typeof text !== 'string' || text.length > Math.ceil(maximum / 3) * 4 ||
+        text.length % 4 !== 0 || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(text))
+      fail('FORMAT_INVALID');
+    let bytes;
+    try { bytes = Uint8Array.from(atob(text), c => c.charCodeAt(0)); }
+    catch (_) { fail('FORMAT_INVALID'); }
+    if (bytes.length < minimum || bytes.length > maximum || toBase64(bytes) !== text)
+      fail('FORMAT_INVALID');
+    return bytes;
+  }
+  function passwordBytes(password) {
+    if (typeof password !== 'string' || password.length > 1024 ||
+        [...password].length < 12 || !/\S/u.test(password)) fail('PASSWORD_POLICY');
+    // TextEncoder replaces lone UTF-16 surrogates; reject them rather than alias passwords.
+    for (let i = 0; i < password.length; i++) {
+      const c = password.charCodeAt(i);
+      if (c >= 0xD800 && c <= 0xDBFF) {
+        const next = password.charCodeAt(++i);
+        if (!(next >= 0xDC00 && next <= 0xDFFF)) fail('PASSWORD_POLICY');
+      } else if (c >= 0xDC00 && c <= 0xDFFF) fail('PASSWORD_POLICY');
+    }
+    const bytes = encoder.encode(password); // No trim, case fold or Unicode normalization.
+    if (bytes.length > 1024) { bytes.fill(0); fail('PASSWORD_POLICY'); }
+    return bytes;
+  }
+  function validatePassword(password) { const bytes = passwordBytes(password); bytes.fill(0); return true; }
+  async function keyFor(password, salt, usage) {
+    const provider = cryptoProvider();
+    const bytes = passwordBytes(password);
+    let base;
+    try { base = await provider.subtle.importKey('raw', bytes, 'PBKDF2', false, ['deriveKey']); }
+    finally { bytes.fill(0); }
+    return provider.subtle.deriveKey(
+      {name: 'PBKDF2', hash: 'SHA-256', salt, iterations: ITERATIONS},
+      base, {name: 'AES-GCM', length: 256}, false, [usage]
+    );
+  }
+  function headerFor(salt, iv) {
+    return {
+      format: FORMAT, version: VERSION,
+      kdf: {name: 'PBKDF2', hash: 'SHA-256', iterations: ITERATIONS, salt_b64: toBase64(salt)},
+      cipher: {name: 'AES-GCM', key_bits: 256, iv_b64: toBase64(iv), tag_bits: 128}
+    };
+  }
+  function parseEnvelope(text) {
+    if (typeof text !== 'string' || text.length > MAX_FILE_BYTES || encoder.encode(text).length > MAX_FILE_BYTES)
+      fail('FILE_TOO_LARGE');
+    let parsed;
+    try { parsed = JSON.parse(text); } catch (_) { fail('FORMAT_INVALID'); }
+    if (!exactKeys(parsed, ['format', 'version', 'kdf', 'cipher', 'ciphertext_b64'])) fail('FORMAT_INVALID');
+    if (parsed.format !== FORMAT || parsed.version !== VERSION) fail('FORMAT_UNSUPPORTED');
+    if (!exactKeys(parsed.kdf, ['name', 'hash', 'iterations', 'salt_b64']) ||
+        !exactKeys(parsed.cipher, ['name', 'key_bits', 'iv_b64', 'tag_bits'])) fail('FORMAT_INVALID');
+    if (parsed.kdf.name !== 'PBKDF2' || parsed.kdf.hash !== 'SHA-256' ||
+        parsed.kdf.iterations !== ITERATIONS || parsed.cipher.name !== 'AES-GCM' ||
+        parsed.cipher.key_bits !== 256 || parsed.cipher.tag_bits !== 128) fail('FORMAT_UNSUPPORTED');
+    const salt = fromBase64(parsed.kdf.salt_b64, 16, 16);
+    const iv = fromBase64(parsed.cipher.iv_b64, 12, 12);
+    const ciphertext = fromBase64(parsed.ciphertext_b64, 17, MAX_PLAINTEXT_BYTES + 16);
+    const header = headerFor(salt, iv);
+    const canonical = JSON.stringify({...header, ciphertext_b64: toBase64(ciphertext)});
+    // Strict canonical v1 rejects duplicate keys, extensions and ambiguous encodings.
+    if (text !== canonical && text !== canonical + '\n') fail('FORMAT_INVALID');
+    return {header, salt, iv, ciphertext};
+  }
+  async function seal(value, password) {
+    const provider = cryptoProvider();
+    validatePassword(password);
+    let serialized;
+    try { serialized = JSON.stringify(value); } catch (_) { fail('PAYLOAD_INVALID'); }
+    if (typeof serialized !== 'string') fail('PAYLOAD_INVALID');
+    if (serialized.length > MAX_PLAINTEXT_BYTES) fail('PAYLOAD_TOO_LARGE');
+    const plaintext = encoder.encode(serialized);
+    serialized = '';
+    if (plaintext.length > MAX_PLAINTEXT_BYTES) { plaintext.fill(0); fail('PAYLOAD_TOO_LARGE'); }
+    const salt = provider.getRandomValues(new Uint8Array(16));
+    const iv = provider.getRandomValues(new Uint8Array(12));
+    const header = headerFor(salt, iv);
+    try {
+      const key = await keyFor(password, salt, 'encrypt');
+      const encrypted = await provider.subtle.encrypt(
+        {name: 'AES-GCM', iv, additionalData: encoder.encode(JSON.stringify(header)), tagLength: 128},
+        key, plaintext
+      );
+      return JSON.stringify({...header, ciphertext_b64: toBase64(new Uint8Array(encrypted))}) + '\n';
+    } finally { plaintext.fill(0); }
+  }
+  async function open(text, password) {
+    const provider = cryptoProvider();
+    const {header, salt, iv, ciphertext} = parseEnvelope(text); // Size and work-factor checks before KDF.
+    const key = await keyFor(password, salt, 'decrypt');
+    let plaintext;
+    try {
+      plaintext = new Uint8Array(await provider.subtle.decrypt(
+        {name: 'AES-GCM', iv, additionalData: encoder.encode(JSON.stringify(header)), tagLength: 128},
+        key, ciphertext
+      ));
+    } catch (_) { fail('AUTH_FAILED'); }
+    // AEAD authenticates bytes before any parsed data is exposed to the caller.
+    try {
+      return JSON.parse(new TextDecoder('utf-8', {fatal: true}).decode(plaintext));
+    } catch (_) { fail('PAYLOAD_INVALID'); }
+    finally { plaintext.fill(0); }
+  }
+  function randomPassword() {
+    return toBase64(cryptoProvider().getRandomValues(new Uint8Array(24))).replace(/\+/g, '-').replace(/\//g, '_');
+  }
+  const api = Object.freeze({seal, open, parseEnvelope, validatePassword, randomPassword, VaultError,
+    constants: Object.freeze({FORMAT, VERSION, ITERATIONS, MAX_FILE_BYTES, MAX_PLAINTEXT_BYTES})});
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  else Object.defineProperty(root, 'FinVault', {value: api, writable: false, configurable: false});
+})(globalThis);
+</script><script>/* SEC-001 workspace contract. Only the pinned public synthetic fixture is supported.
+ * A valid encryption tag authenticates the file, not arbitrary financial semantics.
+ */
+(function (root) {
+  'use strict';
+  const FORMAT = 'FinControl.workspace';
+  const VERSION = 1;
+  const allowed = {
+    lang: ['ru', 'en'], view: ['overview', 'transactions', 'reconciliation', 'sources', 'security'],
+    account: ['all', 'checking', 'savings', 'card'], period: ['full', 'first', 'last'],
+    kind: ['all', 'income', 'expense', 'refund', 'own_transfer', 'card_repayment', 'pending']
+  };
+  const fail = () => { const error = new Error('WORKSPACE_UNSUPPORTED'); error.code = 'WORKSPACE_UNSUPPORTED'; throw error; };
+  function exactKeys(value, keys) {
+    return value !== null && typeof value === 'object' && !Array.isArray(value) &&
+      Object.keys(value).length === keys.length && keys.every(k => Object.hasOwn(value, k));
+  }
+  function cleanView(value) {
+    if (!exactKeys(value, [...Object.keys(allowed), 'search'])) fail();
+    for (const [key, values] of Object.entries(allowed)) if (!values.includes(value[key])) fail();
+    if (typeof value.search !== 'string' || value.search.length > 200 || /[\u0000-\u001f\u007f]/.test(value.search)) fail();
+    return Object.fromEntries([...Object.keys(allowed), 'search'].map(k => [k, value[k]]));
+  }
+  function build(demo, view) {
+    return {format: FORMAT, version: VERSION, synthetic: true,
+      source_commit: demo.provenance.commit,
+      dataset: {manifest: structuredClone(demo.manifest), csv: demo.csv}, view: cleanView(view)};
+  }
+  function validate(value, demo) {
+    if (!exactKeys(value, ['format', 'version', 'synthetic', 'source_commit', 'dataset', 'view']) ||
+        value.format !== FORMAT || value.version !== VERSION || value.synthetic !== true ||
+        value.source_commit !== demo.provenance.commit || !exactKeys(value.dataset, ['manifest', 'csv'])) fail();
+    // Do not trust a caller-supplied hash or `synthetic:true` flag to admit new financial data.
+    if (value.dataset.csv !== demo.csv || JSON.stringify(value.dataset.manifest) !== JSON.stringify(demo.manifest)) fail();
+    const view = cleanView(value.view);
+    return {manifest: structuredClone(demo.manifest), csv: demo.csv, view};
+  }
+  const api = Object.freeze({build, validate});
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  else Object.defineProperty(root, 'FinWorkspace', {value: api, writable: false, configurable: false});
+})(globalThis);
+</script><script>/* Local vault UI. No storage API, network, telemetry or password persistence. */
+'use strict';
+const vaultStrings = {
+ ru: {
+  security:'Защита', save:'Сохранить с паролем', open:'Открыть .fcvault', title:'Защита сохранённого проекта',
+  intro:'Зашифруйте файл на своём устройстве. Пароль не отправляется на сервер.',
+  status:'Локальный режим · синтетический пример', whole:'Сохраняется весь учебный набор и настройки экрана, а не только отфильтрованные строки.',
+  fileCard:'Зашифрованный файл', fileDesc:'Операции и настройки сохраняются внутри .fcvault. Для открытия нужен ваш пароль.',
+  passwordCard:'Пароль — только у вас', passwordDesc:'Он не сохраняется приложением. Потерянный пароль восстановить нельзя.',
+  integrityCard:'Проверка перед открытием', integrityDesc:'Неверный пароль или изменение защищённых данных приводит к отказу. Текущий экран остаётся без изменений.',
+  boundary:'Что защищено, а что нет', boundaryText:'Шифруется скачанный файл проекта. Открытый экран, исходная выписка и обычный экспорт CSV не зашифрованы. Учебный набор остаётся открытым в исходниках этой демонстрации.',
+  onlyFixture:'SEC-001 работает только с этим синтетическим набором. Реальные выписки не импортируются. Это не облачная синхронизация, не E2EE между устройствами и не аудит безопасности.',
+  params:'Формат файла v1', paramsText:'AES-256-GCM · PBKDF2-SHA-256 · 600 000 итераций. Для каждого сохранения создаются новые случайные salt и IV. Заголовок проверяется вместе с содержимым.',
+  flow:'Открыть → рассчитать → зашифровать → восстановить', flowText:'После восстановления показатели рассчитываются заново. Пароль и данные не записываются приложением в localStorage, cookies или IndexedDB.',
+  saveTitle:'Сохранить зашифрованный проект', openTitle:'Восстановить из файла',
+  password:'Пароль', confirm:'Повторите пароль', passwordHelp:'Не менее 12 символов. Лучше длинная уникальная фраза или случайный пароль. Пробелы и регистр имеют значение.',
+  acknowledge:'Я сохраню пароль отдельно: восстановить его через FinControl невозможно.',
+  generate:'Создать случайный пароль', generated:'Случайный пароль показан. Сохраните его в менеджере паролей перед продолжением.',
+  show:'Показать пароль', hide:'Скрыть пароль', download:'Зашифровать и сохранить', restore:'Расшифровать и открыть',
+  choose:'Выберите файл .fcvault', chooseHelp:'До 256 КиБ. Заголовок содержит только формат, параметры шифрования и зашифрованные данные.',
+  cancel:'Отмена', busy:'Проверка и обработка на устройстве…',
+  saved:'Зашифрованный файл передан браузеру для сохранения.', restored:'Файл восстановлен. Показатели пересчитаны.',
+  fileReady:'Формат распознан. Содержимое ещё не расшифровано и не проверено.',
+  noFile:'Сначала выберите файл .fcvault.', mismatch:'Пароли не совпадают.', ackNeeded:'Подтвердите, что сохраните пароль отдельно.',
+  unavailable:'Безопасный Web Crypto недоступен. Откройте файл в поддерживаемом браузере или используйте HTTPS / localhost. Незашифрованной замены не будет.',
+  errorAuth:'Не удалось открыть: неверный пароль или файл повреждён.',
+  errorFormat:'Файл повреждён или его формат не поддерживается.', errorSize:'Файл превышает допустимый размер 256 КиБ.',
+  errorPassword:'Нужен пароль от 12 символов, не только пробелы, не более 1024 байт UTF-8.',
+  errorWorkspace:'Файл расшифрован, но не соответствует этому учебному проекту. Текущие данные не изменены.',
+  errorGeneric:'Операция не выполнена. Данные не изменены; незашифрованный файл не создавался.',
+  plainTitle:'CSV будет сохранён без шифрования', plainText:'Суммы и описания в CSV можно прочитать без пароля. Для защищённой копии отмените экспорт и выберите «Сохранить с паролем».',
+  plainConfirm:'Сохранить обычный CSV', plainSource:'Это полный исходный набор, без учёта фильтров.', plainScope:'Будут сохранены строки текущего представления.',
+  last:'Последнее действие', localProtection:'Шифрование файла · без отправки данных', version:'Интерфейс v0.2 · SEC-001'
+ },
+ en: {
+  security:'Security', save:'Save with password', open:'Open .fcvault', title:'Protect your saved workspace',
+  intro:'Encrypt the file on your device. Your password is not sent to a server.',
+  status:'Local mode · synthetic fixture', whole:'The backup includes the complete fixture and view settings, not only filtered rows.',
+  fileCard:'Encrypted file', fileDesc:'Transactions and view settings are stored inside .fcvault. Your password is needed to open it.',
+  passwordCard:'Your password, your control', passwordDesc:'The app does not save it. A lost password cannot be recovered.',
+  integrityCard:'Verify before opening', integrityDesc:'A wrong password or changed protected data is rejected. The current workspace remains unchanged.',
+  boundary:'What is protected — and what is not', boundaryText:'The downloaded workspace file is encrypted. The unlocked screen, original statement and ordinary CSV exports are not. This demo fixture remains public in the application source.',
+  onlyFixture:'SEC-001 supports only this synthetic fixture. No real statement import. This is not cloud sync, device-to-device E2EE or a security audit.',
+  params:'File format v1', paramsText:'AES-256-GCM · PBKDF2-SHA-256 · 600,000 iterations. Each save uses fresh random salt and IV. The header is authenticated with the contents.',
+  flow:'Open → calculate → encrypt → restore', flowText:'Metrics are recalculated after restoration. The app does not write passwords or data to localStorage, cookies or IndexedDB.',
+  saveTitle:'Save an encrypted workspace', openTitle:'Restore from file',
+  password:'Password', confirm:'Repeat password', passwordHelp:'At least 12 characters. Prefer a long unique passphrase or a random password. Spaces and letter case matter.',
+  acknowledge:'I will keep the password separately: FinControl cannot recover it.',
+  generate:'Generate random password', generated:'The random password is visible. Keep it in a password manager before continuing.',
+  show:'Show password', hide:'Hide password', download:'Encrypt and save', restore:'Decrypt and open',
+  choose:'Select a .fcvault file', chooseHelp:'Up to 256 KiB. The envelope contains only its format, encryption parameters and ciphertext.',
+  cancel:'Cancel', busy:'Verifying and processing on this device…',
+  saved:'Encrypted file handed to the browser for saving.', restored:'Workspace restored. Metrics recalculated.',
+  fileReady:'Format recognized. The content has not been decrypted or authenticated yet.',
+  noFile:'Select a .fcvault file first.', mismatch:'The passwords do not match.', ackNeeded:'Confirm that you will keep the password separately.',
+  unavailable:'Secure Web Crypto is unavailable. Open the file in a supporting browser or use HTTPS / localhost. No plaintext fallback is provided.',
+  errorAuth:'Cannot open: wrong password or damaged file.',
+  errorFormat:'The file is damaged or its format is unsupported.', errorSize:'The file exceeds the 256 KiB limit.',
+  errorPassword:'Use at least 12 characters, not only whitespace, and no more than 1024 UTF-8 bytes.',
+  errorWorkspace:'Decryption succeeded, but this is not the supported demo workspace. Current data is unchanged.',
+  errorGeneric:'The operation failed. Data is unchanged; no plaintext file was created.',
+  plainTitle:'CSV will be saved without encryption', plainText:'Amounts and descriptions in a CSV are readable without a password. For a protected copy, cancel and choose “Save with password”.',
+  plainConfirm:'Save ordinary CSV', plainSource:'This is the full original fixture, regardless of filters.', plainScope:'Only the current view’s rows will be saved.',
+  last:'Last action', localProtection:'File encryption · no data upload', version:'Interface v0.2 · SEC-001'
+ }
+};
+let activeVaultSession = null;
+let vaultLastAction = '';
+function vt(key) { return vaultStrings[state.lang]?.[key] || vaultStrings.ru[key] || key; }
+function vaultAvailable() { return globalThis.isSecureContext !== false && !!globalThis.crypto?.subtle && !!globalThis.crypto?.getRandomValues; }
+function vaultPage() {
+ return `<section class="panel vault-hero"><div class="vault-emblem">${icon('lock')}</div><div><span class="tag">SEC-001 / LOCAL</span><h2>${vt('title')}</h2><p>${vt('intro')}</p><div class="vault-actions">${button('vault-save',icon('lock')+vt('save'),'btn primary')}${button('vault-open',icon('source')+vt('open'),'btn')}</div><p class="micro">${vt('whole')}</p></div></section>
+ ${vaultAvailable()?'':`<div class="notice">${vt('unavailable')}</div>`}
+ ${vaultLastAction?`<div class="vault-receipt" role="status"><strong>${vt('last')}:</strong> ${vt(vaultLastAction)}</div>`:''}
+ <div class="vault-features">${[['lock','fileCard','fileDesc'],['key','passwordCard','passwordDesc'],['check','integrityCard','integrityDesc']].map(([i,a,b])=>`<section class="panel vault-feature">${icon(i)}<h3>${vt(a)}</h3><p>${vt(b)}</p></section>`).join('')}</div>
+ <section class="panel">${panelHead(vt('flow'))}<div class="panel-body"><p class="explain">${vt('flowText')}</p><div class="vault-spec"><strong>${vt('params')}</strong><p>${vt('paramsText')}</p></div></div></section>
+ <section class="vault-boundary"><h3>${vt('boundary')}</h3><p>${vt('boundaryText')}</p><p>${vt('onlyFixture')}</p></section>`;
+}
+function vaultErrorMessage(error) {
+ return vt(({AUTH_FAILED:'errorAuth',CRYPTO_UNAVAILABLE:'unavailable',FORMAT_INVALID:'errorFormat',FORMAT_UNSUPPORTED:'errorFormat',FILE_TOO_LARGE:'errorSize',PAYLOAD_TOO_LARGE:'errorSize',PASSWORD_POLICY:'errorPassword',WORKSPACE_UNSUPPORTED:'errorWorkspace'})[error?.code] || 'errorGeneric');
+}
+function vaultMessage(text, error=false) {
+ const box=document.getElementById('vault-message');
+ if(box) { box.textContent=text;box.className='vault-message'+(error?' error':'');box.hidden=!text; }
+}
+function clearVaultDialog() {
+ activeVaultSession=null;
+ const dialog=document.getElementById('vault-dialog');
+ for(const input of dialog.querySelectorAll('input')) input.value='';
+ dialog.replaceChildren();
+}
+function closeVaultDialog() {
+ const dialog=document.getElementById('vault-dialog');
+ activeVaultSession=null;
+ for(const input of dialog.querySelectorAll('input')) input.value='';
+ if(dialog.open) dialog.close();
+ dialog.replaceChildren();
+}
+function showVaultToast(message) {
+ const box=document.getElementById('toast');box.textContent=message;box.hidden=false;
+ setTimeout(()=>{box.hidden=true;box.textContent='';},5000);
+}
+function vaultDialog(mode) {
+ const dialog=document.getElementById('vault-dialog');
+ if(dialog.open) return;
+ const session={mode,busy:false,fileText:null,fileSerial:0};
+ activeVaultSession=session;
+ const save=mode==='save';
+ dialog.innerHTML=`<div class="dialog-head"><div><div class="micro">FinControl · SEC-001</div><h2 id="vault-title">${vt(save?'saveTitle':'openTitle')}</h2></div>${button('vault-close',icon('close'),'close',`type="button" aria-label="${t('close')}"`)}</div><div class="dialog-body">
+ <div class="vault-inline-note">${vt('whole')}</div>
+ <form id="vault-form" novalidate>
+ ${save?'':`<label class="vault-label" for="vault-file">${vt('choose')}</label><input id="vault-file" type="file" accept=".fcvault,application/json" aria-describedby="vault-file-help"><p class="micro" id="vault-file-help">${vt('chooseHelp')}</p>`}
+ <label class="vault-label" for="vault-password">${vt('password')}</label><input id="vault-password" type="password" autocomplete="off" spellcheck="false" autocapitalize="none" maxlength="1024" aria-describedby="vault-password-help" required>
+ <p class="micro" id="vault-password-help">${vt('passwordHelp')}</p>
+ ${save?`<label class="vault-label" for="vault-confirm">${vt('confirm')}</label><input id="vault-confirm" type="password" autocomplete="off" spellcheck="false" autocapitalize="none" maxlength="1024" required>`:''}
+ <div class="vault-small-actions">${button('vault-show',vt('show'),'btn subtle','type="button" aria-pressed="false"')}${save?button('vault-generate',vt('generate'),'btn subtle','type="button"'):''}</div>
+ ${save?`<label class="vault-ack"><input id="vault-ack" type="checkbox"><span>${vt('acknowledge')}</span></label>`:''}
+ <div id="vault-message" class="vault-message" role="status" aria-live="polite" hidden></div>
+ <div class="vault-form-actions">${button('vault-close',vt('cancel'),'btn','type="button"')}<button type="submit" class="btn primary" id="vault-submit">${vt(save?'download':'restore')}</button></div>
+ </form><p class="micro vault-form-boundary">${vt('onlyFixture')}</p></div>`;
+ dialog.showModal();
+ document.getElementById('vault-form').addEventListener('submit',runVaultOperation);
+ document.getElementById('vault-file')?.addEventListener('change',readVaultFile);
+ if(!vaultAvailable()) {document.getElementById('vault-submit').disabled=true;vaultMessage(vt('unavailable'),true);}
+ document.getElementById(save?'vault-password':'vault-file').focus();
+}
+async function readVaultFile(event) {
+ const session=activeVaultSession;
+ if(!session || session.busy) return;
+ const serial=++session.fileSerial; session.fileText=null;event.target.dataset.validation='reading';
+ const file=event.target.files?.[0];
+ if(!file) {event.target.dataset.validation='empty';vaultMessage('');return;}
+ try {
+  if(file.size>FinVault.constants.MAX_FILE_BYTES) throw new FinVault.VaultError('FILE_TOO_LARGE');
+  const text=await file.text();
+  if(activeVaultSession!==session || serial!==session.fileSerial) return;
+  FinVault.parseEnvelope(text);
+  session.fileText=text;event.target.dataset.validation='ready';vaultMessage(vt('fileReady'));
+ } catch(error) {if(activeVaultSession===session&&serial===session.fileSerial) {event.target.dataset.validation='invalid';vaultMessage(vaultErrorMessage(error),true);}}
+}
+function vaultSetBusy(busy) {
+ const form=document.getElementById('vault-form');if(!form)return;
+ for(const el of form.querySelectorAll('input,button:not([data-action="vault-close"])')) el.disabled=busy;
+ form.setAttribute('aria-busy',String(busy));
+}
+async function runVaultOperation(event) {
+ event.preventDefault();
+ const session=activeVaultSession;
+ if(!session || session.busy) return;
+ let password=document.getElementById('vault-password').value;
+ try {
+  FinVault.validatePassword(password);
+  if(session.mode==='save') {
+   if(password!==document.getElementById('vault-confirm').value) {vaultMessage(vt('mismatch'),true);return;}
+   if(!document.getElementById('vault-ack').checked) {vaultMessage(vt('ackNeeded'),true);return;}
+  } else if(!session.fileText) {vaultMessage(vt('noFile'),true);return;}
+  session.busy=true;vaultSetBusy(true);vaultMessage(vt('busy'));
+  for(const input of document.querySelectorAll('#vault-form input[type="password"],#vault-form input[type="text"]')) input.value='';
+  if(session.mode==='save') {
+   const payload=FinWorkspace.build(D,state);
+   const encrypted=await FinVault.seal(payload,password);
+   if(activeVaultSession!==session || !document.getElementById('vault-dialog').open) return;
+   const url=URL.createObjectURL(new Blob([encrypted],{type:'application/octet-stream'}));
+   const link=document.createElement('a');link.href=url;link.download='fincontrol.fcvault';document.body.append(link);link.click();link.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),2000);
+   vaultLastAction='saved';closeVaultDialog();render();showVaultToast(vt('saved'));
+  } else {
+   const payload=await FinVault.open(session.fileText,password);
+   const checked=FinWorkspace.validate(payload,D);
+   const prepared=M.prepare(checked.manifest,M.parseCSV(checked.csv));
+   M.calculate(prepared,checked.view.account,checked.view.period); // Complete checks before committing UI state.
+   if(activeVaultSession!==session || !document.getElementById('vault-dialog').open) return;
+   data=prepared;Object.assign(state,checked.view);
+   vaultLastAction='restored';closeVaultDialog();render();showVaultToast(vt('restored'));
+  }
+ } catch(error) {
+  if(activeVaultSession===session) vaultMessage(vaultErrorMessage(error),true);
+ } finally {
+  password=''; // Best effort; JavaScript does not guarantee string/key zeroization.
+  if(activeVaultSession===session) {session.busy=false;vaultSetBusy(false);for(const input of document.querySelectorAll('#vault-form input[type="password"],#vault-form input[type="text"]'))input.value='';}
+ }
+}
+function confirmPlainExport(filename,text,bom=true,fullSource=false) {
+ const dialog=document.getElementById('vault-dialog');if(dialog.open)return;
+ activeVaultSession={mode:'plain',filename,text,bom};
+ dialog.innerHTML=`<div class="dialog-head"><h2 id="vault-title">${vt('plainTitle')}</h2>${button('vault-close',icon('close'),'close',`type="button" aria-label="${t('close')}"`)}</div><div class="dialog-body"><p class="explain">${vt('plainText')}</p><p class="micro">${vt(fullSource?'plainSource':'plainScope')}</p><div class="vault-form-actions">${button('vault-close',vt('cancel'),'btn','type="button"')}${button('vault-export-plain',vt('plainConfirm'),'btn primary','type="button"')}</div></div>`;
+ dialog.showModal();
+ dialog.querySelector('[data-action="vault-close"]').focus();
+}
+function handleVaultAction(action) {
+ const name=action.dataset.action;
+ if(name==='vault-save')vaultDialog('save');
+ else if(name==='vault-open')vaultDialog('open');
+ else if(name==='vault-close')closeVaultDialog();
+ else if(name==='vault-show') {
+  if(activeVaultSession?.busy)return true;
+  const fields=[...document.querySelectorAll('#vault-password,#vault-confirm')];
+  const show=fields[0]?.type==='password';fields.forEach(x=>{x.type=show?'text':'password';});
+  action.textContent=vt(show?'hide':'show');action.setAttribute('aria-pressed',String(show));
+ } else if(name==='vault-generate') {
+  if(activeVaultSession?.busy)return true;
+  try {const password=FinVault.randomPassword();for(const input of document.querySelectorAll('#vault-password,#vault-confirm')){input.type='text';input.value=password;}
+   const show=document.querySelector('[data-action="vault-show"]');show.textContent=vt('hide');show.setAttribute('aria-pressed','true');vaultMessage(vt('generated'));
+  } catch(error) {vaultMessage(vaultErrorMessage(error),true);}
+ } else if(name==='vault-export-plain') {
+  const session=activeVaultSession;if(session?.mode==='plain'){saveFile(session.filename,session.text,session.bom);closeVaultDialog();}
+ } else return false;
+ return true;
+}
+document.getElementById('vault-dialog').addEventListener('close',()=>{if(!document.getElementById('vault-dialog').open)clearVaultDialog();});
+document.getElementById('vault-dialog').addEventListener('cancel',event=>{event.preventDefault();closeVaultDialog();});
+</script><script>'use strict';
+const D=window.DEMO_DATA,M=window.FinModel;
+let data=M.prepare(D.manifest,M.parseCSV(D.csv));
+const state={lang:'ru',view:'overview',account:'all',period:'full',kind:'all',search:''};
+const dictionaries={
+ ru:{overview:'Обзор',transactions:'Операции',reconciliation:'Сверка',sources:'Источники',workspace:'РАБОЧАЯ ОБЛАСТЬ',analytics:'Финансовая аналитика',title:'Финансы под контролем',subtitle:'Личная финансовая панель',demo:'Демонстрационные данные · август 2026',local:'Локальная демоверсия',safe:'Только синтетический пример. Без подключения к банку.',export:'Экспорт CSV',all:'Все счета',checking:'Текущий счёт',savings:'Накопительный счёт',card:'Кредитная карта',full:'1–31 августа 2026',first:'1–15 августа 2026',last:'16–31 августа 2026',income:'Доходы',net:'Расходы после возвратов',cash:'Деньги на счетах',debt:'Долг по карте',incomeSub:'Только проведённые операции',netSub:'Без дублей и внутренних переводов',cashSub:'Остатки на 1 сентября 2026',debtSub:'Отдельно от доступных денег',available:'По данным примера',partial:'Баланс не определён для части периода',notice:'Выбрана часть месяца. Доходы и расходы пересчитаны; конечные остатки не показаны, поскольку источник содержит проверяемые остатки только за полный месяц.',flow:'Накопленный денежный поток',flowSub:'Движение по денежным счетам, с начала выбранного периода',forPeriod:'за выбранный период',ledger:'Расчёт по проведённым операциям',axis:'тыс. ₽',spending:'Куда ушли деньги',spendingSub:'Расходы за вычетом связанных возвратов',netTotal:'чистые расходы',categoriesNote:'Покупка по карте: 10 000 ₽ − возврат 2 500 ₽.',checks:'Контроль качества данных',checksSub:'Проверки для выбранного счёта и периода',duplicates:'Повторные строки исключены',duplicateDesc:'Одна операция не становится двумя расходами.',movements:'Группы перемещений сверены',movementDesc:'Перевод и погашение не считаются покупками.',pending:'Операции в ожидании',pendingDesc:'Не включены в проведённые суммы.',inspect:'Посмотреть сверку',accounts:'Счета и обязательства',accountsSub:'Нажмите счёт, чтобы изменить область анализа',balance:'Остаток',liability:'Задолженность',cashVsResult:'Деньги и результат — не одно и то же',cashChange:'Изменение денег',surplus:'Доходы минус расходы',bridgeNote:'Погашение карты меняет деньги и долг, но не создаёт новый расход.',detail:'Детализация',sourceNote:'Синтетический сценарий • RUB • не финансовая рекомендация',version:'Прототип интерфейса v0.1',sourceCommit:'Источник примера',viewRows:'операций в выбранной области',search:'Поиск по ID, сумме или описанию',allTypes:'Все типы операций',expense:'Расход',refund:'Возврат',own_transfer:'Свой перевод',card_repayment:'Погашение карты',status:'Статус',posted:'Проведено',pendingStatus:'В ожидании',date:'Дата',operation:'Операция',account:'Счёт',amount:'Сумма',tableNote:'Фильтры этой таблицы не меняют сводные показатели. CSV содержит только показанные строки. Дубли исключены; строки в ожидании сохраняют статус.',noRows:'В выбранной области операций нет.',shown:'Показано',of:'из',close:'Закрыть',formula:'Как получено число',evidence:'Операции-основания',metadata:'Источник и область',readOnly:'Просмотр, без изменения исходных данных',naive:'Простая сумма списаний',naiveSub:'Иллюстрация ошибки: сложить отрицательные проведённые строки исходного CSV',corrected:'Расходы после обработки',rawNeg:'Отрицательные проведённые строки',removeDup:'Исключить повторные списания',removeMove:'Исключить внутренние перемещения',deductRefund:'Вычесть связанные возвраты',notSavings:'Это исправление расчёта на учебном примере, а не реально сэкономленные деньги.',whyMatters:'Показатель можно проверить',whyText:'Сумма в карточке раскрывается до конкретных операций. Переводы, погашения, возвраты и ожидание не смешиваются с расходами.',scopeNote:'Для сверки пары используются все строки примера. В показатели входят только записи выбранной области.',ruleDuplicate:'1. Дубли',ruleTransfer:'2. Внутренние перемещения',ruleRefund:'3. Возвраты',rulePending:'4. Ожидание',duplicateRule:'Повтор определяется по source + account_id + provider_transaction_id. Совпадение только суммы или даты недостаточно.',transferRule:'Две связанные стороны одного перемещения сверены по владельцу, валюте и сумме. Погашение долга не дублирует покупку.',refundRule:'Возврат связан с исходной покупкой. Он уменьшает расход, но не становится новым доходом.',pendingRule:'Операция в ожидании видна в реестре, но не изменяет подтверждённые показатели.',seeRecords:'Открыть записи',origin:'Происхождение данных',originSub:'Зафиксированный учебный набор из выбранного репозитория',limits:'Границы прототипа',limitsText:'Это отдельный интерфейс с локальным адаптером для одного синтетического примера. Он не запускает исходный FIN-001, не импортирует банковские выписки и не подтверждает готовность финансового движка.',integration:'Следующая интеграция',integrationText:'Подключить версионированный снимок проверенного движка отдельным изменением. Не добавлять сеть, платежи или UI в замороженный FIN-001 PR.',openSource:'Сохранить исходный CSV',currentScope:'Текущая область',cutoff:'Срез источника: 1 сентября 2026, 00:00 UTC',noComparison:'Предыдущего месяца нет; рост в процентах не выдуман.',synthetic:'СИНТЕТИЧЕСКИЙ ПРИМЕР',original:'Исходная строка CSV',included:'Участие в расчёте',excludedPending:'Ожидающая операция исключена из проведённых показателей.',excludedMovement:'Внутреннее перемещение: не доход и не расход. Может менять деньги или долг на выбранном счёте.',refundExplanation:'Связанный возврат уменьшает расход по исходной покупке.',expenseExplanation:'Проведённый расход. Покупка учитывается один раз.',incomeExplanation:'Проведённый доход.',netFormula:'Проведённые расходы − связанные возвраты. Без повторов, переводов, погашений и ожидания.',cashFormula:'Сумма конечных остатков выбранных денежных счетов. Кредитный долг показан отдельно.',debtFormula:'Сумма задолженности по выбранным кредитным счетам на дату среза.',incomeFormula:'Сумма проведённых доходов выбранной области. Переводы и возвраты сюда не включены.',surplusFormula:'Доходы − расходы после возвратов. Это не бухгалтерская чистая прибыль.',cashMovementFormula:'Сумма проведённых движений по выбранным денежным счетам. Покупки в кредит меняют долг, а не денежный счёт.',noBalance:'Нет отдельного подтверждённого остатка на границу выбранного под-периода.',noEvidence:'Нет операций-оснований в выбранной области.',fullFixture:'Полный исходный набор (не отфильтрованный)',exported:'CSV сохранён для текущего представления',context:'Контекст сверки вне выбранного счёта',reset:'Все счета',rub:'RUB',rawCount:'исходных строк',uniqueCount:'уникальных операций',fixtureOnly:'Только этот пример',sourceStatus:'Данные примера сверены',metricScope:'Счёт и период из верхних фильтров',result:'Результат',gross:'Расходы до возвратов'},
+ en:{overview:'Overview',transactions:'Transactions',reconciliation:'Reconciliation',sources:'Sources',workspace:'WORKSPACE',analytics:'Financial analytics',title:'Your finances, explained',subtitle:'Personal finance dashboard',demo:'Synthetic demo data · August 2026',local:'Offline prototype',safe:'Synthetic fixture only. No bank connection.',export:'Export CSV',all:'All accounts',checking:'Checking account',savings:'Savings account',card:'Credit card',full:'Aug 1–31, 2026',first:'Aug 1–15, 2026',last:'Aug 16–31, 2026',income:'Income',net:'Spending after refunds',cash:'Cash in accounts',debt:'Card liability',incomeSub:'Posted transactions only',netSub:'No duplicates or internal transfers',cashSub:'Balances as of Sep 1, 2026',debtSub:'Separate from available cash',available:'Fixture balances',partial:'No subperiod balance evidence',notice:'A partial month is selected. Income and spending are recalculated. Closing balances are unavailable because the source provides verifiable balances only for the full month.',flow:'Cumulative cash movement',flowSub:'Depository movements since the start of the selected period',forPeriod:'in the selected period',ledger:'Calculated from posted transactions',axis:'RUB thousands',spending:'Where the money went',spendingSub:'Expenses less attributable refunds',netTotal:'net spending',categoriesNote:'Card purchase: RUB 10,000 − refund RUB 2,500.',checks:'Data quality checks',checksSub:'For the selected accounts and period',duplicates:'Duplicate rows excluded',duplicateDesc:'One transaction is not counted twice.',movements:'Movement groups reconciled',movementDesc:'Transfers and repayments are not purchases.',pending:'Pending transactions',pendingDesc:'Not included in posted aggregates.',inspect:'Inspect reconciliation',accounts:'Accounts & liabilities',accountsSub:'Select an account to change the analysis scope',balance:'Balance',liability:'Liability',cashVsResult:'Cash movement is not economic surplus',cashChange:'Cash movement',surplus:'Income less spending',bridgeNote:'Card repayment changes cash and debt; it does not create another expense.',detail:'Details',sourceNote:'Synthetic scenario • RUB • not financial advice',version:'Interface prototype v0.1',sourceCommit:'Fixture source',viewRows:'transactions in scope',search:'Search by ID, amount or description',allTypes:'All transaction types',expense:'Expense',refund:'Refund',own_transfer:'Own transfer',card_repayment:'Card repayment',status:'Status',posted:'Posted',pendingStatus:'Pending',date:'Date',operation:'Transaction',account:'Account',amount:'Amount',tableNote:'Table filters do not change overview metrics. CSV includes only displayed rows. Duplicates are excluded; pending rows retain their status.',noRows:'No transactions in this scope.',shown:'Showing',of:'of',close:'Close',formula:'How this value is calculated',evidence:'Supporting transactions',metadata:'Source & scope',readOnly:'Read only; source data is unchanged',naive:'Naive debit total',naiveSub:'Illustrative mistake: add every negative posted row from the raw CSV',corrected:'Spending after processing',rawNeg:'Negative posted source rows',removeDup:'Exclude duplicate debits',removeMove:'Exclude internal movements',deductRefund:'Subtract attributable refunds',notSavings:'This corrects a synthetic calculation. It is not evidence of real money saved.',whyMatters:'Every metric is inspectable',whyText:'Open a metric to see the underlying transactions. Transfers, repayments, refunds and pending rows are not mixed into spending.',scopeNote:'Reconciliation uses the full fixture for counterpart context. Metrics include only rows inside the selected scope.',ruleDuplicate:'1. Duplicates',ruleTransfer:'2. Internal movements',ruleRefund:'3. Refunds',rulePending:'4. Pending',duplicateRule:'Identity uses source + account_id + provider_transaction_id. Matching amounts or dates alone are insufficient.',transferRule:'Two linked legs are checked for owner, currency and amount. Repaying debt does not duplicate the purchase.',refundRule:'A refund is linked to its original purchase. It reduces spending rather than creating income.',pendingRule:'Pending transactions remain visible in the ledger but do not change posted metrics.',seeRecords:'Inspect records',origin:'Data provenance',originSub:'A pinned synthetic fixture from the selected repository',limits:'Prototype boundaries',limitsText:'This is a separate interface with a local adapter for one synthetic fixture. It does not run FIN-001, import bank statements, or establish financial-engine readiness.',integration:'Next integration',integrationText:'Connect a versioned snapshot from the reviewed engine in a separate change. Do not add networking, payments or UI to the frozen FIN-001 pull request.',openSource:'Save source CSV',currentScope:'Current scope',cutoff:'Source cutoff: Sep 1, 2026, 00:00 UTC',noComparison:'No previous month is available; no invented growth comparison.',synthetic:'SYNTHETIC FIXTURE',original:'Original CSV row',included:'Metric treatment',excludedPending:'This pending row is excluded from posted metrics.',excludedMovement:'Internal movement: not income or spending. It may change cash or debt for the selected account.',refundExplanation:'This linked refund reduces the expense of the original purchase.',expenseExplanation:'Posted expense. The purchase is counted once.',incomeExplanation:'Posted income.',netFormula:'Posted expenses − attributable refunds. Duplicates, transfers, repayments and pending rows are excluded.',cashFormula:'Sum of closing balances in selected depository accounts. Credit liability is shown separately.',debtFormula:'Outstanding debt in selected credit accounts at the source cutoff.',incomeFormula:'Sum of posted income in the selected scope. Transfers and refunds do not count as income.',surplusFormula:'Income − spending after refunds. This is not accounting net profit.',cashMovementFormula:'Sum of posted movements in selected depository accounts. Credit purchases change debt, not cash.',noBalance:'No separately confirmed closing balance exists for this subperiod.',noEvidence:'No supporting transactions in this scope.',fullFixture:'Complete source fixture (unfiltered)',exported:'CSV saved for the current view',context:'Reconciliation context outside the selected account',reset:'All accounts',rub:'RUB',rawCount:'source rows',uniqueCount:'unique transactions',fixtureOnly:'This fixture only',sourceStatus:'Fixture reconciled',metricScope:'Account and period from the global filters',result:'Result',gross:'Spending before refunds'}
+};
+Object.assign(dictionaries.ru,{security:vaultStrings.ru.security,version:vaultStrings.ru.version});
+Object.assign(dictionaries.en,{security:vaultStrings.en.security,version:vaultStrings.en.version});
+const names={
+ 'salary-1':['Заработная плата','Salary'], 'freelance-1':['Доход от проекта','Freelance income'], 'groceries-1':['Продукты','Groceries'],
+ 'transfer-out-1':['Перевод в накопления','Transfer to savings'], 'transfer-in-1':['Пополнение накоплений','Savings transfer in'],
+ 'card-purchase-1':['Покупка по карте','Card purchase'],'refund-1':['Частичный возврат','Partial refund'],
+ 'repayment-out-1':['Погашение карты','Card repayment out'],'repayment-in-1':['Уменьшение долга','Card repayment in'],
+ 'fee-1':['Комиссия','Account fee'],'pending-1':['Покупка в ожидании','Pending purchase']
+};
+function t(k){return dictionaries[state.lang][k]||k}
+function name(r){return names[r.provider_transaction_id]?.[state.lang==='ru'?0:1]||r.description}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function money(n,signed=false){if(n===null)return '—';const v=Number(n)/100;return (signed&&v>0?'+':'')+new Intl.NumberFormat(state.lang==='ru'?'ru-RU':'en-US',{maximumFractionDigits:v%1?2:0}).format(v)+(state.lang==='ru'?' ₽':' RUB')}
+function date(s){return new Date(s).toLocaleDateString(state.lang==='ru'?'ru-RU':'en-US',{day:'2-digit',month:'short',timeZone:'UTC'})}
+const paths={lock:'M5 10h14v11H5zM8 10V6a4 4 0 0 1 8 0v4M12 14v3',key:'M8 14a5 5 0 1 1 4-8l9 0v4h-3v3h-4l-2-1',grid:'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',list:'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',check:'M9 12l2 2 4-4M12 3l8 3v6c0 5-8 9-8 9s-8-4-8-9V6z',source:'M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3M12 3h9v9M10 14L21 3',down:'M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5',calendar:'M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2zM7 2v5M17 2v5M3 10h18',wallet:'M3 7V5a2 2 0 0 1 2-2h13v4M3 7h18v14H5a2 2 0 0 1-2-2V7zm13 5h5v5h-5z',arrow:'M5 12h14m-5-5 5 5-5 5',up:'M7 17L17 7M7 7h10v10',card:'M3 5h18v14H3zM3 10h18M7 15h3',search:'M21 21l-5-5M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16',close:'M6 6l12 12M18 6 6 18',bank:'M3 9l9-6 9 6H3zm2 3v7m7-7v7m7-7v7M3 21h18',info:'M12 11v6M12 7h.01M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20'};
+function icon(k){return `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[k]||paths.info}"/></svg>`}
+function button(action,text,cls='btn',extra=''){return `<button class="${cls}" data-action="${action}" ${extra}>${text}</button>`}
+function snapshot(){return M.calculate(data,state.account,state.period)}
+function panelHead(title,subtitle='',right=''){return `<div class="panel-head"><div><h2>${title}</h2>${subtitle?`<div class="panel-sub">${subtitle}</div>`:''}</div>${right}</div>`}
+function metric(key,label,sub,ic,s){return `<button class="kpi" data-action="metric" data-key="${key}" aria-label="${esc(t(label)+': '+money(s.metrics[key]))}"><div class="kpi-head"><span>${t(label)}</span>${icon(ic)}</div><div class="kpi-number" data-metric="${key}">${money(s.metrics[key])}</div><div class="kpi-sub">${s.metrics[key]===null?t('partial'):t(sub)}</div></button>`}
+function kpis(s){return `<div class="kpis">${metric('income_minor','income','incomeSub','up',s)}${metric('net_spending_minor','net','netSub','list',s)}${metric('closing_cash_minor','cash','cashSub','wallet',s)}${metric('closing_liability_minor','debt','debtSub','card',s)}</div>`}
+function flowChart(s){
+ const points=s.daily.map(r=>({day:r.day,v:Number(r.value_minor)/100000}));const W=window.innerWidth<=730?Math.max(285,window.innerWidth-70):620,H=185,L=40,R=17,T=14,B=31;
+ const max=Math.max(0,...points.map(p=>p.v)),min=Math.min(0,...points.map(p=>p.v));
+ const hi=max===min?1:Math.ceil(max/25)*25,lo=min===0?0:Math.floor(min/25)*25;
+ const x=i=>L+i*(W-L-R)/Math.max(1,points.length-1),y=v=>T+(hi-v)*(H-T-B)/(hi-lo);
+ let line='';points.forEach((p,i)=>line+=(i?`H${x(i).toFixed(1)}V${y(p.v).toFixed(1)}`:`M${x(i)},${y(p.v).toFixed(1)}`));
+ const area=line+`L${x(points.length-1)},${y(0)}L${L},${y(0)}Z`;
+ const ticks=Array.from({length:4},(_,i)=>lo+(hi-lo)*i/3);
+ const marks=window.innerWidth<=730?[0,Math.floor((points.length-1)/2),points.length-1]:[...new Set([0,Math.floor((points.length-1)/4),Math.floor((points.length-1)/2),Math.floor((points.length-1)*3/4),points.length-1])];
+ return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${t('flow')} — ${money(s.metrics.cash_movement_minor)}"><defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#51b99b" stop-opacity=".17"/><stop offset="1" stop-color="#51b99b" stop-opacity=".01"/></linearGradient></defs>${ticks.map(v=>`<line x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}" stroke="#e9eef2" stroke-dasharray="3 4"/><text x="${L-10}" y="${y(v)+4}" text-anchor="end" fill="#8592a6" font-size="10">${Math.round(v)}</text>`).join('')}<path d="${area}" fill="url(#area)"/><path d="${line}" fill="none" stroke="#0a8970" stroke-width="2.7" stroke-linejoin="round"/>${points.map((p,i)=>`<circle cx="${x(i)}" cy="${y(p.v)}" r="4" fill="#0a8970" opacity="${i===points.length-1?'1':'0'}"><title>${date(p.day+'T00:00:00Z')}: ${money(BigInt(s.daily[i].value_minor))}</title></circle>`).join('')}${marks.map(i=>`<text x="${x(i)}" y="${H-8}" fill="#8592a6" font-size="10" text-anchor="middle">${date(points[i].day+'T00:00:00Z')}</text>`).join('')}</svg>`;
+}
+function spending(s){const total=s.metrics.net_spending_minor;return `<section class="panel">${panelHead(t('spending'),t('spendingSub'))}<div class="split-value">${money(total)}</div><div class="composition">${s.categories.length?s.categories.map(c=>`<button class="composition-row" data-action="tx" data-id="${c.id}"><div class="composition-label"><span>${name(c.rows[0])}</span><strong>${money(c.minor)}</strong></div><div class="bartrack"><div class="bar" style="width:${total>0n?Number(c.minor*10000n/total)/100:0}%"></div></div></button>`).join(''):`<p class="micro">${t('noRows')}</p>`}</div><div class="composition-footer">${s.refunds.length?t('categoriesNote'):t('incomeSub')}</div></section>`}
+function checks(s){return `<section class="panel">${panelHead(t('checks'),t('checksSub'))}<div class="checks">${[['duplicate_observations','duplicates','duplicateDesc',false],['reconciled_movement_groups','movements','movementDesc',false],['pending_transactions','pending','pendingDesc',true]].map(([n,label,desc,amber])=>`<div class="check-row"><div class="checknum ${amber?'amber':''}">${s.counts[n]}</div><div class="checktext"><strong>${t(label)}</strong><p>${t(desc)}</p></div></div>`).join('')}</div><div class="panel-link">${button('nav',`${t('inspect')} ${icon('arrow')}`,'btn subtle','data-view="reconciliation"')}</div></section>`}
+function accounts(s){return `<section class="panel">${panelHead(t('accounts'),t('accountsSub'))}<div class="panel-body" style="padding-top:2px;padding-bottom:9px">${s.selected.map(a=>`<button class="account-row" data-action="account" data-account="${a.account_id}"><div class="account-icon">${icon(a.type==='credit'?'card':'bank')}</div><div class="account-main"><strong>${t(a.account_id)}</strong><small>${t(a.type==='credit'?'liability':'balance')} · RUB</small></div><div class="account-value">${s.full?money(a.type==='credit'?-BigInt(a.closing_signed_balance_minor):BigInt(a.closing_signed_balance_minor)):'—'}<small>${s.full?'01.09.2026':t('partial')}</small></div></button>`).join('')}</div><div class="panel-link">${state.account!=='all'?button('account',t('reset'),'btn subtle','data-account="all"'):''}</div></section>`}
+function overview(s){return `${kpis(s)}<div class="grid-main"><section class="panel">${panelHead(t('flow'),t('flowSub'),`<span class="tag gray">RUB</span>`)}<div class="chart-big-number">${money(s.metrics.cash_movement_minor,true)} <small>${t('forPeriod')}</small></div><div class="chart">${flowChart(s)}</div><div class="chart-caption"><span class="legend"><i></i>${t('ledger')}</span><span>${t('axis')}</span></div></section>${spending(s)}</div><div class="grid-secondary"><div>${accounts(s)}<section class="panel" style="margin-top:22px">${panelHead(t('cashVsResult'))}<div class="bridge"><div><p>${t('cashChange')}</p>${button('metric',money(s.metrics.cash_movement_minor,true),'btn subtle','data-key="cash_movement_minor"')}</div><div class="bridge-arrow">≠</div><div><p>${t('surplus')}</p>${button('metric',money(s.metrics.economic_surplus_minor,true),'btn subtle','data-key="economic_surplus_minor"')}</div></div></section></div>${checks(s)}</div>`}
+function transactionTable(s){const rows=M.filterTable(s,state.kind,state.search);return `<div class="tablewrap"><table><thead><tr><th>${t('date')}</th><th>${t('operation')}</th><th>${t('account')}</th><th>${t('status')}</th><th>${t('amount')}</th></tr></thead><tbody>${rows.map(r=>`<tr class="rowclick" data-action="tx" data-id="${r.provider_transaction_id}" tabindex="0" role="button" aria-label="${esc(name(r)+', '+money(r.minor))}"><td>${date(r.booked_at)}</td><td><div class="tx-title">${esc(name(r))}</div><div class="tx-id">${r.provider_transaction_id}</div></td><td>${t(r.account_id)}</td><td><span class="tag ${r.status==='pending'?'amber':'gray'}">${t(r.status==='pending'?'pendingStatus':'posted')}</span></td><td class="amount ${r.minor>0n?'positive':''}">${money(r.minor,true)}</td></tr>`).join('')}</tbody></table>${rows.length?'':`<div class="empty">${t('noRows')}</div>`}</div><div class="table-foot"><strong>${t('shown')} ${rows.length} ${t('of')} ${s.rows.length}.</strong> ${t('tableNote')}</div>`}
+function transactions(s){return `<section class="panel">${panelHead(t('transactions'),`${s.rows.length} ${t('viewRows')}`,`<span class="badge-count">${t('readOnly')}</span>`)}<div class="table-filters"><label class="search">${icon('search')}<input id="search-input" type="search" maxlength="200" placeholder="${t('search')}" value="${esc(state.search)}" aria-label="${t('search')}"></label><label class="control"><span class="screen-reader">${t('allTypes')}</span><select id="kind-filter">${['all','income','expense','refund','own_transfer','card_repayment','pending'].map(k=>`<option value="${k}" ${state.kind===k?'selected':''}>${t(k==='all'?'allTypes':k)}</option>`).join('')}</select></label></div><div id="table-content">${transactionTable(s)}</div></section>`}
+function recon(s){const scoped=r=>(state.account==='all'||r.account_id===state.account)&&r.booked_at>=s.range.from&&r.booked_at<s.range.to;const sumNeg=rows=>rows.filter(r=>r.status==='posted'&&r.minor<0n).reduce((z,r)=>z-r.minor,0n);const rawTotal=sumNeg(data.raw.filter(scoped)),dup=sumNeg(data.duplicates.filter(scoped)),move=sumNeg(s.posted.filter(r=>['own_transfer','card_repayment'].includes(r.kind)));return `<div class="recon-summary"><section class="panel">${panelHead(t('naive'),t('naiveSub'))}<div class="chart-big-number" style="color:#a47333">${money(rawTotal)}</div><div class="calculation">${[['rawNeg',rawTotal],['removeDup',-dup],['removeMove',-move],['deductRefund',-s.metrics.attributable_refunds_minor]].map(([label,value])=>`<div class="calc-row"><span>${t(label)}</span><strong>${money(value)}</strong></div>`).join('')}<div class="calc-row result"><span>${t('corrected')}</span><strong>${money(s.metrics.net_spending_minor)}</strong></div><p class="micro">${t('notSavings')}</p></div></section><section class="panel">${panelHead(t('whyMatters'))}<div class="panel-body"><p class="explain">${t('whyText')}</p>${button('metric',t('formula')+' '+icon('arrow'),'btn primary','data-key="net_spending_minor"')}<p class="explain" style="margin-top:25px">${t('scopeNote')}</p><div class="provenance">${s.counts.observations} ${t('rawCount')} → ${s.counts.unique_transactions} ${t('uniqueCount')}<br>${t('cutoff')}</div></div></section></div><div class="rules">${[['ruleDuplicate','duplicateRule','duplicate','duplicate_observations'],['ruleTransfer','transferRule','movement','reconciled_movement_groups'],['ruleRefund','refundRule','refund',''],['rulePending','pendingRule','pending','pending_transactions']].map(([label,description,mode,n])=>`<section class="panel rule-card"><span class="tag ${mode==='pending'?'amber':''}">${n?s.counts[n]:s.refunds.length}</span><h3>${t(label)}</h3><p>${t(description)}</p>${button('rule',t('seeRecords')+' '+icon('arrow'),'btn subtle',`data-mode="${mode}"`)}</section>`).join('')}</div>`}
+function sources(s){return `<div class="source-grid"><section class="panel">${panelHead(t('origin'),t('originSub'))}<div class="source-list"><div class="source-item"><span class="tag amber">${t('synthetic')}</span></div><div class="source-item"><strong>transactions.csv</strong><div class="micro">12 ${t('rawCount')} · 11 ${t('uniqueCount')} · RUB</div><code>SHA-256: ${D.provenance.csv_sha256}</code>${button('source-csv',t('openSource'),'btn')}</div><div class="source-item"><strong>manifest.json</strong><div class="micro">${t('cutoff')}</div><code>SHA-256: ${D.provenance.manifest_sha256}</code></div><div class="source-item"><strong>${t('sourceCommit')}</strong><code>${D.provenance.repo}</code><code>${D.provenance.commit}</code><code>tests/fixtures/synthetic/</code></div><div class="source-item"><strong>${t('currentScope')}</strong><div class="micro">${t(state.account==='all'?'all':state.account)} · ${t(state.period)}<br>${t('noComparison')}</div></div></div></section><div><section class="panel">${panelHead(t('limits'))}<div class="panel-body"><p class="explain">${t('limitsText')}</p><span class="tag gray">${t('fixtureOnly')}</span><p class="micro">${t('fullFixture')}</p></div></section><section class="panel" style="margin-top:22px">${panelHead(t('integration'))}<div class="panel-body"><p class="explain">${t('integrationText')}</p><div class="provenance">FIN-001 → versioned JSON snapshot → read-only UI<br>Source engine QA ≠ prototype UI checks</div></div></section></div></div>`}
+function render(){const s=snapshot();document.documentElement.lang=state.lang;document.title='FinControl — '+t(state.view);document.getElementById('app').innerHTML=`<div class="layout"><aside class="sidebar"><div class="brand"><div class="brandmark" aria-hidden="true"><i></i><i></i><i></i></div><div class="brand-copy"><div class="brandname">FinControl</div><div class="brandcaption">FINANCE · EXPLAINED</div></div></div><nav class="navgroup" aria-label="${t('workspace')}"><div class="navcaption">${t('workspace')}</div>${[['overview','grid'],['transactions','list'],['reconciliation','check'],['sources','source'],['security','lock']].map(([v,ic])=>button('nav',icon(ic)+`<span>${t(v)}</span>`,'navbtn '+(state.view===v?'active':''),`data-view="${v}" aria-current="${state.view===v?'page':'false'}" aria-label="${t(v)}"`)).join('')}</nav><div class="sidebar-bottom"><strong>${t('local')}</strong>${t('safe')}</div><div class="sideversion">FINCONTROL / 0.2</div></aside><main class="main"><header class="topbar"><div><div class="breadcrumb">${t('analytics')}<span>/</span>${t(state.view)}</div><h1>${t(state.view==='overview'?'title':state.view)}</h1></div><div class="top-actions"><div class="lang" aria-label="Language">${['ru','en'].map(l=>button('lang',l.toUpperCase(),state.lang===l?'active':'',`data-lang="${l}" aria-pressed="${state.lang===l}"`)).join('')}</div>${button('vault-save',icon('lock')+vt('save'),'btn primary')}${button('export',icon('down')+t('export'),'btn')}</div></header><div class="toolbar"><div class="demo-label"><i class="dot"></i>${t('demo')}</div><div class="controls"><label class="control">${icon('wallet')}<span class="screen-reader">${t('account')}</span><select id="account-filter">${['all','checking','savings','card'].map(a=>`<option value="${a}" ${state.account===a?'selected':''}>${t(a)}</option>`).join('')}</select></label><label class="control">${icon('calendar')}<span class="screen-reader">${t('forPeriod')}</span><select id="period-filter">${['full','first','last'].map(p=>`<option value="${p}" ${state.period===p?'selected':''}>${t(p)}</option>`).join('')}</select></label></div></div>${s.full?'':`<div class="notice" role="status">${t('notice')}</div>`}<div id="view">${state.view==='overview'?overview(s):state.view==='transactions'?transactions(s):state.view==='reconciliation'?recon(s):state.view==='security'?vaultPage():sources(s)}</div><footer class="bottomline" style="margin-top:24px"><span>${t('sourceNote')}</span><span>${t('version')} <span class="footer-id">/ ${D.provenance.commit.slice(0,7)}</span></span></footer></main></div>`;bindControls()}
+function bindControls(){document.getElementById('account-filter').addEventListener('change',e=>{state.account=e.target.value;render()});document.getElementById('period-filter').addEventListener('change',e=>{state.period=e.target.value;render()});document.getElementById('kind-filter')?.addEventListener('change',e=>{state.kind=e.target.value;updateTable()});document.getElementById('search-input')?.addEventListener('input',e=>{state.search=e.target.value;updateTable()})}
+function updateTable(){document.getElementById('table-content').innerHTML=transactionTable(snapshot())}
+function detailRows(rows){return rows.length?rows.map(r=>`<div class="detail-row"><div>${esc(name(r))}<small>${r.provider_transaction_id} · CSV ${r.source_row} · ${t(r.account_id)}</small>${state.account!=='all'&&r.account_id!==state.account?`<div class="micro">${t('context')}</div>`:''}</div><strong>${money(r.minor,true)}</strong></div>`).join(''):`<p class="micro">${t('noEvidence')}</p>`}
+function openDialog(title,body){const dialog=document.getElementById('detail');dialog.innerHTML=`<div class="dialog-head"><div><div class="micro" style="margin-bottom:6px">FinControl · ${t('detail')}</div><h2 id="dialog-title">${title}</h2></div>${button('close',icon('close'),'close',`aria-label="${t('close')}"`)}</div><div class="dialog-body">${body}</div>`;dialog.showModal()}
+function metricDialog(key){const s=snapshot(),map={income_minor:['income','incomeFormula',s.income],net_spending_minor:['net','netFormula',[...s.expenses,...s.refunds]],closing_cash_minor:['cash','cashFormula',null],closing_liability_minor:['debt','debtFormula',null],economic_surplus_minor:['surplus','surplusFormula',[...s.income,...s.expenses,...s.refunds]],cash_movement_minor:['cashChange','cashMovementFormula',s.cashRows]};const [label,formula,rows]=map[key];let evidence=rows!==null?detailRows(rows):s.full?s.selected.filter(a=>key==='closing_cash_minor'?a.type==='depository':a.type==='credit').map(a=>`<div class="detail-row"><div>${t(a.account_id)}<small>manifest.json · ${a.account_id} · 01.09.2026</small></div><strong>${money(a.type==='credit'?-BigInt(a.closing_signed_balance_minor):BigInt(a.closing_signed_balance_minor))}</strong></div>`).join(''):`<p class="micro">${t('noBalance')}</p>`;openDialog(t(label),`<div class="dialog-metric">${money(s.metrics[key])}</div><div class="formula">${t(formula)}</div><h3>${t('evidence')}</h3>${evidence||`<p class="micro">${t('noEvidence')}</p>`}<h3>${t('metadata')}</h3><div class="provenance">${t('metricScope')}<br>${t(state.account)} · ${t(state.period)}<br>${t('synthetic')} · ${D.provenance.commit.slice(0,7)}</div>`)}
+function transactionDialog(id){const r=data.rows.find(r=>r.provider_transaction_id===id);if(!r)return;const explanation=r.status==='pending'?'excludedPending':['own_transfer','card_repayment'].includes(r.kind)?'excludedMovement':r.kind==='refund'?'refundExplanation':r.kind==='expense'?'expenseExplanation':'incomeExplanation';const related=r.kind==='refund'?data.rows.filter(x=>x.provider_transaction_id===r.link_ref):['own_transfer','card_repayment'].includes(r.kind)?[...(data.groups.get(JSON.stringify([r.kind,r.link_ref]))||[])].filter(x=>x!==r):r.kind==='expense'?data.rows.filter(x=>x.link_ref===r.provider_transaction_id&&x.kind==='refund'):[];openDialog(esc(name(r)),`<div class="dialog-metric">${money(r.minor,true)}</div><div class="formula">${t(explanation)}</div><div class="provenance">${t('original')}: ${r.source_row}<br>ID: ${r.provider_transaction_id}<br>${t('account')}: ${t(r.account_id)}<br>${r.booked_at} · RUB · ${t(r.status==='pending'?'pendingStatus':'posted')}</div>${related.length?`<h3>${t('reconciliation')}</h3>${detailRows(related)}`:''}<p class="micro">${t('synthetic')} · ${t('readOnly')}</p>`)}
+function ruleDialog(mode){const s=snapshot();let rows=[],label,description;if(mode==='duplicate'){rows=data.duplicates.filter(r=>(state.account==='all'||r.account_id===state.account)&&r.booked_at>=s.range.from&&r.booked_at<s.range.to);label='ruleDuplicate';description='duplicateRule'}else if(mode==='movement'){rows=s.visibleGroups.flat();label='ruleTransfer';description='transferRule'}else if(mode==='refund'){rows=s.refunds;label='ruleRefund';description='refundRule'}else{rows=s.rows.filter(r=>r.status==='pending');label='rulePending';description='pendingRule'}openDialog(t(label),`<div class="formula">${t(description)}</div>${detailRows(rows)}<p class="micro">${t('scopeNote')}</p>`)}
+function saveFile(name,text,bom=true){const url=URL.createObjectURL(new Blob([bom?'\ufeff':'',text],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);const box=document.getElementById('toast');box.textContent=t('exported');box.hidden=false;setTimeout(()=>box.hidden=true,2500)}
+function dispatch(el){if(handleVaultAction(el))return;const a=el.dataset.action;if(a==='nav'){state.view=el.dataset.view;state.kind='all';state.search='';render();window.scrollTo({top:0,behavior:'instant'})}else if(a==='lang'){state.lang=el.dataset.lang;render()}else if(a==='account'){state.account=el.dataset.account;render()}else if(a==='metric')metricDialog(el.dataset.key);else if(a==='tx')transactionDialog(el.dataset.id);else if(a==='close')document.getElementById('detail').close();else if(a==='rule')ruleDialog(el.dataset.mode);else if(a==='source-csv')confirmPlainExport('synthetic-source-full.csv',D.csv,false,true);else if(a==='export'){const s=snapshot(),rows=state.view==='transactions'?M.filterTable(s,state.kind,state.search):s.rows;confirmPlainExport(`fincontrol-${state.account}-${state.period}.csv`,M.csvExport(rows))}}
+document.addEventListener('click',e=>{const action=e.target.closest('[data-action]');if(action)dispatch(action)});
+document.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)&&e.target.matches('tr[data-action]')){e.preventDefault();dispatch(e.target)}});
+document.getElementById('detail').addEventListener('click',e=>{if(e.target===e.currentTarget){const b=e.currentTarget.getBoundingClientRect();if(e.clientX<b.left||e.clientX>b.right||e.clientY<b.top||e.clientY>b.bottom)e.currentTarget.close()}});
+let smallLayout=window.innerWidth<=730;window.addEventListener('resize',()=>{const next=window.innerWidth<=730;if(next!==smallLayout){smallLayout=next;render()}});
+window.FinControl={state,snapshot,get data(){return data;},render};render();
+</script></body></html>
